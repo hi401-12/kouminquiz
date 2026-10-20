@@ -1,0 +1,2808 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>公共・政治経済 一問一答＆記述クイズ（人権保障・地方自治）</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .badge-correct {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    }
+    .badge-nuance {
+      background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+    }
+    .badge-partial {
+      background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    }
+    .badge-wrong {
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen antialiased flex flex-col selection:bg-cyan-500 selection:text-white">
+  <!-- ナビゲーションバー -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 font-bold text-sm">
+          政
+        </span>
+        <div>
+          <h1 class="text-base font-bold text-slate-100 tracking-tight">公共・政治経済：人権保障と地方自治マスター</h1>
+          <p class="text-[11px] text-slate-400">学習プリント完全準拠｜一問一答・複数完答・記述ニュアンス採点＆無限自動作問</p>
+        </div>
+      </div>
+      <div class="flex items-center flex-wrap gap-2 text-xs">
+        <button id="btn-endless-toggle" onclick="toggleEndlessMode()" class="px-2.5 py-1 rounded-md border border-cyan-500/40 bg-cyan-950/40 text-cyan-300 hover:bg-cyan-900/50 transition text-[11px] flex items-center gap-1.5 font-medium" title="問題が尽きたら自動的に新しい問題を生成して出題し続けます">
+          <span>♾️</span>
+          <span id="endless-label">自動追加: ON</span>
+        </button>
+        <button id="btn-generate-now" onclick="generateMoreQuestions(5, false)" class="px-2.5 py-1 rounded-md border border-emerald-500/40 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/50 transition text-[11px] flex items-center gap-1 font-semibold">
+          <span>✨</span>
+          <span>+5問自動生成</span>
+        </button>
+        <button id="btn-sound-toggle" onclick="toggleSound()" class="px-2.5 py-1 rounded-md border border-slate-700 text-slate-300 hover:bg-slate-800 transition text-[11px] flex items-center gap-1.5">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-label">音声ON</span>
+        </button>
+        <div class="bg-slate-800/80 border border-slate-700/80 rounded-md px-2.5 py-1 text-slate-300">
+          全 <span id="total-pool-count" class="font-semibold text-cyan-400 mono">0</span> 問
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 sm:py-8">
+    <!-- 自動生成通知トースト -->
+    <div id="gen-toast" class="hidden mb-4 px-4 py-2.5 rounded-xl bg-emerald-950/90 border border-emerald-500/40 text-emerald-200 text-xs font-medium flex items-center justify-between shadow-lg">
+      <span id="gen-toast-text" class="flex items-center gap-2">✨ 新しい問題を自動生成して追加しました！</span>
+      <button onclick="document.getElementById('gen-toast').classList.add('hidden')" class="text-emerald-400 hover:text-white ml-3">✕</button>
+    </div>
+
+    <!-- 分野・出題形式フィルタータブ -->
+    <div class="mb-6 space-y-3">
+      <div>
+        <div class="text-xs text-slate-400 mb-2 font-medium flex items-center justify-between flex-wrap gap-1">
+          <span>📂 プリント単元カテゴリの選択</span>
+          <span class="text-[11px] text-cyan-400/90">✨ 複数解答・複数要素の記述は「すべて揃って完答正解」となります</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5 p-1 bg-slate-950 border border-slate-800 rounded-xl">
+          <button onclick="setEraFilter('all')" data-era="all" class="era-tab px-2.5 py-2 text-xs font-semibold rounded-lg transition text-center bg-cyan-500 text-slate-950 shadow-sm">
+            全範囲
+          </button>
+          <button onclick="setEraFilter('equality')" data-era="equality" class="era-tab px-2.5 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 rounded-lg transition text-center hover:bg-slate-900">
+            ①平等・差別判例
+          </button>
+          <button onclick="setEraFilter('new_rights')" data-era="new_rights" class="era-tab px-2.5 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 rounded-lg transition text-center hover:bg-slate-900">
+            ②外国人・子・LGBT
+          </button>
+          <button onclick="setEraFilter('local_principle')" data-era="local_principle" class="era-tab px-2.5 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 rounded-lg transition text-center hover:bg-slate-900">
+            ③地方自治・請求権
+          </button>
+          <button onclick="setEraFilter('local_finance')" data-era="local_finance" class="era-tab px-2.5 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 rounded-lg transition text-center hover:bg-slate-900">
+            ④地方財政・分権
+          </button>
+        </div>
+      </div>
+
+      <!-- 出題形式フィルター -->
+      <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-950/60 border border-slate-800/80 rounded-xl px-3 py-2">
+        <span class="text-[11px] text-slate-400 font-medium">✍️ 出題形式の絞り込み：</span>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button onclick="setTypeFilter('all')" data-qtype="all" class="qtype-tab px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-800 text-cyan-300 border border-cyan-500/40 transition">
+            すべて
+          </button>
+          <button onclick="setTypeFilter('term')" data-qtype="term" class="qtype-tab px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-slate-200 border border-transparent transition">
+            一問一答（単一用語）
+          </button>
+          <button onclick="setTypeFilter('multi')" data-qtype="multi" class="qtype-tab px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-slate-200 border border-transparent transition">
+            複数完答問題
+          </button>
+          <button onclick="setTypeFilter('descriptive')" data-qtype="descriptive" class="qtype-tab px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-slate-200 border border-transparent transition">
+            記述・説明問題
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- クイズカード -->
+    <div id="quiz-card" class="bg-slate-950/70 border border-slate-800 rounded-2xl shadow-xl p-5 sm:p-7 relative overflow-hidden backdrop-blur">
+      <!-- 復習モードバナー -->
+      <div id="review-banner" class="hidden mb-4 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium flex items-center justify-between">
+        <span class="flex items-center gap-1.5">
+          <span>🔁</span>
+          <span>間違えた問題・未完答問題の復習モード実行中</span>
+        </span>
+        <button onclick="exitReviewMode()" class="text-[11px] underline hover:text-amber-200">全問題に戻る</button>
+      </div>
+
+      <!-- 進捗・スコアバー -->
+      <div class="flex items-center justify-between text-xs font-medium text-slate-400 mb-2">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span id="current-category-pill" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-cyan-950 text-cyan-300 border border-cyan-800/60">
+            全範囲
+          </span>
+          <span id="question-type-badge" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+            用語入力
+          </span>
+          <span id="generated-badge" class="hidden px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-950 text-purple-300 border border-purple-700/60">
+            ✨ 自動生成問題
+          </span>
+          <span id="question-index-label" class="mono text-slate-300">Question 1 / 10</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-emerald-400">完答正解: <strong id="stat-correct-count" class="mono text-emerald-300">0</strong></span>
+          <span class="text-rose-400">不正解・未完答: <strong id="stat-wrong-count" class="mono text-rose-300">0</strong></span>
+        </div>
+      </div>
+      
+      <!-- プログレスバー -->
+      <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-6">
+        <div id="quiz-progress-bar" class="h-full bg-cyan-400 transition-all duration-300 rounded-full" style="width: 10%;"></div>
+      </div>
+
+      <!-- プリント該当箇所タグ＆問題文 -->
+      <div class="mb-6">
+        <div class="flex items-center gap-2 mb-2 flex-wrap">
+          <span id="era-subtag" class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-medium">
+            プリント① P.1
+          </span>
+          <span id="difficulty-stars" class="text-xs text-amber-400/90 tracking-widest">★★★☆☆</span>
+        </div>
+        <h2 id="question-text" class="text-base sm:text-lg font-bold leading-relaxed text-slate-100">
+          問題文を読み込み中...
+        </h2>
+      </div>
+
+      <!-- 入力フォーム（単一入力 ＆ 複数完答入力の両対応） -->
+      <form id="quiz-input-form" onsubmit="submitAnswer(event)" class="space-y-4">
+        <div>
+          <label id="answer-input-label" class="block text-xs font-medium text-slate-400 mb-2">
+            解答を入力してください（Enterキーで採点）
+          </label>
+
+          <!-- 単一入力（用語・記述用） -->
+          <div id="single-input-Wrapper" class="space-y-2.5">
+            <div class="relative flex items-center">
+              <input 
+                type="text" 
+                id="answer-input" 
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                placeholder="ここに解答を入力..." 
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-base transition pr-28 shadow-inner"
+              >
+              <button 
+                type="submit" 
+                id="btn-submit-single"
+                class="absolute right-1.5 bg-cyan-500 hover:bg-cyan-400 active:scale-95 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm transition shadow-sm"
+              >
+                採点する
+              </button>
+            </div>
+            <div class="flex items-center justify-end">
+              <button
+                type="button"
+                id="btn-giveup-single"
+                onclick="submitGiveUp()"
+                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-rose-500/40 bg-rose-950/30 hover:bg-rose-900/50 text-rose-300 text-xs font-semibold transition active:scale-95"
+              >
+                <span>🏳️</span>
+                <span>わからない（不正解にして答えを見る）</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 複数完答入力（multi用） -->
+          <div id="multi-input-wrapper" class="hidden space-y-2.5">
+            <div id="multi-slots-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <!-- JSで各スロットの入力欄を生成 -->
+            </div>
+            <div class="flex items-center justify-between flex-wrap gap-2 pt-1">
+              <span id="multi-order-note" class="text-[11px] text-amber-300/90">
+                ※すべての欄を正しく埋めて「完答」すると正解になります
+              </span>
+              <div class="flex items-center gap-2 ml-auto">
+                <button
+                  type="button"
+                  id="btn-giveup-multi"
+                  onclick="submitGiveUp()"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-rose-500/40 bg-rose-950/30 hover:bg-rose-900/50 text-rose-300 text-xs font-semibold transition active:scale-95"
+                >
+                  <span>🏳️</span>
+                  <span>わからない</span>
+                </button>
+                <button 
+                  type="submit" 
+                  id="btn-submit-multi"
+                  class="bg-cyan-500 hover:bg-cyan-400 active:scale-95 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-sm"
+                >
+                  完答採点する
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- ヒント機能 -->
+      <div class="mt-4">
+        <button id="btn-hint" onclick="toggleHint()" type="button" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-cyan-400 transition py-1">
+          <span>💡</span>
+          <span id="hint-button-text">ヒント・着眼点を表示する</span>
+        </button>
+        <div id="hint-box" class="hidden mt-2 p-3 bg-amber-950/20 border border-amber-500/20 rounded-xl text-xs text-amber-200/90 leading-relaxed">
+          <!-- ヒントテキスト -->
+        </div>
+      </div>
+
+      <!-- 解答後フィードバック・解説エリア -->
+      <div id="feedback-panel" class="hidden mt-6 pt-6 border-t border-slate-800 transition-all duration-300">
+        <!-- 判定ヘッダー -->
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div id="result-badge" class="px-3.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1.5">
+            <!-- JSで挿入 -->
+          </div>
+          <div id="user-submitted-preview" class="text-xs text-slate-400">
+            あなたの解答: <span id="user-answer-text" class="mono font-semibold text-slate-200"></span>
+          </div>
+        </div>
+
+        <!-- 完答内訳・必須要素チェックリスト表示 -->
+        <div id="nuance-match-detail" class="hidden mb-3 p-3 rounded-xl bg-slate-900/90 border border-slate-700/80 text-xs space-y-1.5">
+          <div id="nuance-match-title" class="font-bold text-slate-300 text-[11px]">📋 完答・必須要素の判定内訳：</div>
+          <div id="nuance-match-list" class="space-y-1"></div>
+        </div>
+
+        <!-- 回答と模範解答との違い・比較分析＆学習アドバイス -->
+        <div id="diff-advice-box" class="mb-4 p-4 rounded-xl bg-indigo-950/30 border border-indigo-500/30 text-xs space-y-2.5">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="font-bold text-indigo-300 text-xs flex items-center gap-1.5">
+              <span>🔍</span>
+              <span>あなたの回答と模範解答の違い・学習アドバイス</span>
+            </div>
+            <button
+              type="button"
+              id="btn-ai-advice"
+              onclick="requestAiDetailedAdvice()"
+              class="px-2.5 py-1 rounded-md bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 border border-indigo-400/40 font-semibold transition text-[11px] flex items-center gap-1"
+            >
+              <span>🤖</span>
+              <span>AIでさらに詳しく添削・比較</span>
+            </button>
+          </div>
+          <div id="diff-comparison-content" class="text-slate-200 leading-relaxed space-y-1.5 bg-slate-900/70 p-3 rounded-lg border border-slate-800">
+            <!-- 回答と模範解答の具体的な比較 -->
+          </div>
+          <div id="advice-tip-content" class="text-amber-200/95 leading-relaxed flex items-start gap-2 bg-amber-950/25 p-2.5 rounded-lg border border-amber-500/20">
+            <!-- 覚え方・混同防止・記述改善アドバイス -->
+          </div>
+        </div>
+
+        <!-- 不正解時のAIニュアンス再採点 ＆ 自己採点救済ボタン -->
+        <div id="self-override-box" class="hidden mb-3 px-3 py-2 rounded-lg bg-slate-900/90 border border-slate-700 text-xs flex items-center justify-between flex-wrap gap-2">
+          <span class="text-slate-400">※すべての要素を別の言い回しで答えていた場合：</span>
+          <div class="flex items-center gap-2">
+            <button type="button" id="btn-ai-regrade" onclick="regradeWithGemini()" class="px-2.5 py-1 rounded-md bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 border border-sky-500/40 font-semibold transition text-[11px]">
+              🤖 AIでニュアンス再判定
+            </button>
+            <button type="button" onclick="overrideAsCorrect()" class="px-2.5 py-1 rounded-md bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-semibold transition text-[11px]">
+              ✓ 完答正解に切り替える
+            </button>
+          </div>
+        </div>
+
+        <!-- 正解表示カード -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">プリントの模範解答（完答基準）</div>
+          <div id="canonical-answers" class="text-base sm:text-lg font-bold text-cyan-300 mono">
+            <!-- 正解例 -->
+          </div>
+          <div class="mt-3 pt-3 border-t border-slate-800">
+            <div class="text-[11px] font-semibold text-slate-400 mb-1 flex items-center gap-1">
+              <span>📖 プリントの要点・背景解説</span>
+            </div>
+            <p id="explanation-content" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <!-- 解説文 -->
+            </p>
+          </div>
+        </div>
+
+        <!-- 次へボタン -->
+        <div class="flex items-center gap-3">
+          <button 
+            id="btn-next" 
+            onclick="nextQuestion()" 
+            class="flex-1 bg-slate-100 hover:bg-white text-slate-900 font-bold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 active:scale-98 shadow-md"
+          >
+            <span id="btn-next-label">次の問題に進む</span>
+            <span class="text-sm">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 完了リザルトカード -->
+    <div id="result-summary-card" class="hidden bg-slate-950/80 border border-slate-800 rounded-2xl p-6 sm:p-8 text-center backdrop-blur shadow-2xl">
+      <div class="w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-3xl mx-auto mb-4 font-bold">
+        🎓
+      </div>
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-100 mb-2">現在のセットを解き終えました！</h2>
+      <p id="result-era-title" class="text-xs text-slate-400 mb-5">選択区分：全範囲</p>
+
+      <!-- スコアグリッド -->
+      <div class="grid grid-cols-3 gap-3 max-w-md mx-auto mb-6">
+        <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl">
+          <div class="text-[11px] text-slate-400">問題数</div>
+          <div id="summary-total" class="text-lg font-bold text-slate-100 mono">0</div>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl">
+          <div class="text-[11px] text-emerald-400">完答正解数</div>
+          <div id="summary-correct" class="text-lg font-bold text-emerald-300 mono">0</div>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl">
+          <div class="text-[11px] text-cyan-400">正解率</div>
+          <div id="summary-accuracy" class="text-lg font-bold text-cyan-300 mono">0%</div>
+        </div>
+      </div>
+
+      <!-- 新問題を自動生成して続行するパネル -->
+      <div class="bg-gradient-to-r from-cyan-950/60 via-slate-900 to-emerald-950/60 border border-cyan-500/30 rounded-xl p-4 mb-6 max-w-xl mx-auto">
+        <div class="text-xs font-bold text-cyan-300 mb-1 flex items-center justify-center gap-1.5">
+          <span>♾️</span>
+          <span>プリント範囲から新しい問題を自動生成して演習を続ける</span>
+        </div>
+        <p class="text-[11px] text-slate-400 mb-3">
+          まだ出題されていない切り口（表の逆引き・複数完答・判例記述など）を自動生成してすぐに出題します。
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-2.5">
+          <button 
+            onclick="generateMoreQuestions(5, true)" 
+            class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm flex items-center gap-1.5"
+          >
+            <span>✨ 新しい5問を自動生成して続ける</span>
+          </button>
+          <button 
+            onclick="generateMoreQuestions(10, true)" 
+            class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm flex items-center gap-1.5"
+          >
+            <span>🚀 新しい10問を自動生成して続ける</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 間違えた問題リスト -->
+      <div id="wrong-answers-container" class="hidden text-left bg-slate-900 border border-slate-800 rounded-xl p-4 mb-6 max-h-72 overflow-y-auto">
+        <h3 class="text-xs font-bold text-rose-400 mb-2 flex items-center gap-1.5">
+          <span>⚠️ 要復習の重要項目（不正解・未完答）</span>
+          <span id="wrong-count-badge" class="px-2 py-0.2 rounded-full bg-rose-950 text-rose-300 text-[10px] mono">0問</span>
+        </h3>
+        <ul id="wrong-items-list" class="space-y-2.5 text-xs text-slate-300">
+          <!-- 間違いリスト -->
+        </ul>
+      </div>
+
+      <!-- アクションボタン -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button 
+          id="btn-start-review" 
+          onclick="startReviewMistakes()" 
+          class="hidden w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition shadow-sm text-sm"
+        >
+          間違えた問題だけを復習する
+        </button>
+        <button 
+          onclick="restartCategoryQuiz()" 
+          class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-5 py-2.5 rounded-xl transition shadow-sm text-sm"
+        >
+          同じセットをもう一度
+        </button>
+        <button 
+          onclick="setEraFilter('all')" 
+          class="w-full sm:w-auto border border-slate-700 hover:bg-slate-800 text-slate-300 font-semibold px-4 py-2.5 rounded-xl transition text-sm"
+        >
+          全範囲に戻る
+        </button>
+      </div>
+    </div>
+
+    <!-- プリント重要まとめ早見リファレンス -->
+    <section class="mt-8 pt-6 border-t border-slate-800/80">
+      <details class="group bg-slate-950/40 border border-slate-800/60 rounded-xl p-3.5 transition text-xs">
+        <summary class="font-medium text-slate-300 cursor-pointer list-none flex items-center justify-between">
+          <span class="flex items-center gap-2">
+            <span>📌</span>
+            <span>プリント全8ページ 重要判例・直接請求・地方財政の早見リファレンス</span>
+          </span>
+          <span class="text-slate-500 group-open:rotate-180 transition-transform">▼</span>
+        </summary>
+        <div class="mt-3 pt-3 border-t border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-400">
+          <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/50 space-y-1">
+            <strong class="text-cyan-400 block mb-1">【人権保障・平等原則・新しい人権】</strong>
+            <p>・最高裁違憲判決：尊属殺重罰規定(1973)、婚外子法定相続分(2013)、女性再婚禁止期間100日超(2015)、性同一性障害特例法の生殖能力欠如要件(2023)、旧優生保護法強制不妊手術(2024)</p>
+            <p>・差別解消法制：全国水平社(1922)→同対審答申(1965)→部落差別解消推進法(2016) / アイヌ文化振興法(1997)→アイヌ施策推進法(2019:先住民族と明記)</p>
+            <p>・外国人・子ども：マクリーン事件(在留制度の枠内)、こども基本法(2022)→こども家庭庁(2023)、ヤングケアラー、LGBT理解増進法(2023)</p>
+          </div>
+          <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/50 space-y-1">
+            <strong class="text-cyan-400 block mb-1">【地方自治・直接請求権・地方財政】</strong>
+            <p>・地方自治の本旨(92条)：住民自治(93条)＋団体自治(94条)、二元代表制(大統領制が基本＋議院内閣制要素)</p>
+            <p>・直接請求権：条例制定改廃(1/50→首長)、監査請求(1/50→監査委員)、解散・首長議員解職(1/3→選管)、副知事等解職(1/3→首長)</p>
+            <p>・地方分権と財政：地方分権一括法(1999:機関委任事務廃止→自治事務・法定受託事務)、三割自治、地方交付税交付金(使途制限なし) vs 国庫支出金(使途特定)、三位一体の改革、構造改革特区・国家戦略特区、ふるさと納税(地場産品・3割以下)</p>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <!-- フッター -->
+  <footer class="border-t border-slate-800/80 py-4 text-center text-[11px] text-slate-500">
+    公共・政治経済 学習プリントまとめ（人権保障・地方自治）準拠 演習Webアプリ（完答採点＆自動問題生成対応）
+  </footer>
+
+  <script>
+    /* =========================================================================
+       問題データベース（PDF全8ページ準拠：複数解答はすべて「完答制」に統一）
+       qType:
+         - "term": 単一用語一問一答
+         - "multi": 複数解答の完答問題（slots配列のすべてを正解して初めて正解）
+         - "descriptive": 記述問題（requiredGroupsのすべての概念を満たして完答正解）
+       ========================================================================= */
+    const ALL_QUESTIONS = [
+      /* ----------------------------------------------------
+         1. 平等原則・差別解消判例（プリント① P.1〜2）
+         ---------------------------------------------------- */
+      {
+        id: "eq_01",
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜基本的人権の性質と自然権【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】基本的人権の3つの性質は「固有性」「普遍性」と、①「侵すことのできない永久の権利」を意味する何性か。また、②人権は生まれながらにして与えられたとするロックやルソーらの思想を何というか。両方答えよ。",
+        slots: [
+          { label: "① 人権の性質", acceptable: ["不可侵性", "不可侵"] },
+          { label: "② 思想の名称", acceptable: ["自然権思想", "自然権"] }
+        ],
+        acceptable: ["① 不可侵性 ／ ② 自然権思想"],
+        hint: "①は「〇〇〇性」、②は「〇〇権思想」です。両方揃って正解になります。",
+        explanation: "基本的人権は①固有性、②普遍性、③不可侵性の3つの性質をもち、ロックやルソーらが唱えた「生まれながらにして与えられた権利」とする『自然権思想』に基づいています。"
+      },
+      {
+        id: "eq_01b",
+        era: "equality",
+        qType: "multi",
+        ordered: false,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜基本的人権の3性質【3項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答（順不同）】基本的人権が持つ3つの性質（①人間であることにより当然に持つ、②人種や性別・国籍に関係なくすべての人間が持つ、③侵すことのできない永久の権利）を3つすべて答えよ。",
+        slots: [
+          { label: "性質1", acceptable: ["固有性"] },
+          { label: "性質2", acceptable: ["普遍性"] },
+          { label: "性質3", acceptable: ["不可侵性"] }
+        ],
+        acceptable: ["固有性・普遍性・不可侵性（3つ完答）"],
+        hint: "プリントP.1最上段の(3)(4)(6)「〇〇性」「〇〇性」「〇〇〇性」の3つです（順不同）。",
+        explanation: "基本的人権の3つの性質は「固有性」「普遍性」「不可侵性」です。"
+      },
+      {
+        id: "eq_02",
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜法の下の平等の2側面【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】日本国憲法第14条の「法の下の平等」が意味する2つの側面について、①すべての人に区別なく等しく同じ法を適用すること、②国民を差別するような法律自体を作ってはならないこと、をそれぞれ何というか。",
+        slots: [
+          { label: "① 法を等しく適用", acceptable: ["法適用の平等", "法適用"] },
+          { label: "② 差別的な法を作らない", acceptable: ["法内容の平等", "法内容", "法律内容の平等"] }
+        ],
+        acceptable: ["① 法適用の平等 ／ ② 法内容の平等"],
+        hint: "①は「法〇〇の平等」、②は「法〇〇の平等」です。",
+        explanation: "法の下の平等には、行政や司法が法を等しく適用する「法適用の平等」と、立法府（国会）が不合理な差別を含む法律を作ってはならない「法内容の平等」の2つが含まれます。"
+      },
+      {
+        id: "eq_03",
+        era: "equality",
+        qType: "descriptive",
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜記述：結果の平等（実質的平等）",
+        difficulty: "★★☆☆☆",
+        question: "【記述】「機会の平等（形式的平等）」が全ての人を一律公平に扱うことを指すのに対し、「結果の平等（実質的平等）」とはどのような平等の考え方か。簡潔に説明せよ。",
+        acceptable: [
+          "人々の間にある格差などに着目して、その是正を図ること",
+          "格差に着目して是正を図ること"
+        ],
+        nuanceGroups: [
+          { label: "人々の間の「格差・不利益・差」への着目", keywords: ["格差", "差", "不利益", "違い", "弱者", "ハンディ", "不平等"] },
+          { label: "格差を「是正・解消・なくす」こと", keywords: ["是正", "解消", "なくす", "埋める", "減らす", "縮める", "助ける", "補う", "配慮", "救済", "平準化"] }
+        ],
+        nuanceMode: "all",
+        hint: "①人々の間にある「格差（差）」に着目する点と、②それを「是正（解消）する」点の2要素を含めて答えましょう。",
+        explanation: "結果の平等（実質的平等）とは、個人の置かれた環境や条件によって生じる「人々の間にある格差などに着目して、その是正を図ること」です。"
+      },
+      {
+        id: "eq_04",
+        era: "equality",
+        qType: "term",
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜判例(1) 1973年最高裁違憲判決",
+        difficulty: "★☆☆☆☆",
+        question: "実父から長年の虐待を受けていたA子が父親を殺害した事件で、1973年に最高裁大法廷が戦後初の法令違憲判決（全裁判官一致）を下した刑法第200条の罪名を何というか。",
+        acceptable: ["尊属殺", "尊属殺人罪", "尊属殺人", "尊属殺重罰規定"],
+        nuanceGroups: [{ label: "尊属殺", keywords: ["尊属殺"] }],
+        nuanceMode: "all",
+        hint: "父母や祖父母など自分より上の世代の血縁者を「尊属（そんぞく）」といいます。",
+        explanation: "尊属殺重罰規定違憲訴訟（1973年最高裁大法廷判決）では、尊属殺の法定刑を死刑または無期懲役のみに限定していた刑法第200条が、普通殺（刑法199条）に比べ著しく不合理な差別として違憲とされました（1995年に削除）。"
+      },
+      {
+        id: "eq_05",
+        era: "equality",
+        qType: "descriptive",
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜記述：婚外子法定相続分差別訴訟",
+        difficulty: "★★☆☆☆",
+        question: "【記述】2013年の婚外子法定相続分差別訴訟において、最高裁大法廷は民法第900条4号のどのような規定を憲法第14条違反（違憲）と判断したか。",
+        acceptable: [
+          "婚外子の法定相続分を婚内子の半分（2分の1）とする規定"
+        ],
+        nuanceGroups: [
+          { label: "対象（婚外子・非嫡出子）", keywords: ["婚外子", "非嫡出子", "法律婚をしていない", "未婚"] },
+          { label: "分野（法定相続分・遺産相続）", keywords: ["相続", "遺産"] },
+          { label: "差別内容（婚内子の半分・1/2）", keywords: ["半分", "1/2", "2分の1", "二分の1"] }
+        ],
+        nuanceMode: "all",
+        hint: "①「婚外子」の、②「法定相続分」を、③婚内子の「半分（1/2）」としていた規定、という3要素をすべて含めて答えましょう。",
+        explanation: "改正前の民法第900条4号は「婚外子の法定相続分を婚内子の半分（1/2）とする」と定めていましたが、2013年最高裁大法廷判決で法の下の平等を定めた憲法14条に反し違憲と判断され、均等に分けられるよう民法が改正されました。"
+      },
+      {
+        id: "eq_06",
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜部落差別の歴史と法制【3項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】部落差別の解消をめぐり、①1922年に設立された解放運動団体、②1965年に部落差別の解消を国の責務と認めた審議会答申、③2016年に部落差別のない社会の実現を目的として制定された法律、をそれぞれ答えよ。",
+        slots: [
+          { label: "① 1922年設立団体", acceptable: ["全国水平社", "水平社"] },
+          { label: "② 1965年答申", acceptable: ["同和対策審議会答申", "同対審答申"] },
+          { label: "③ 2016年制定法", acceptable: ["部落差別解消推進法", "部落差別の解消の推進に関する法律"] }
+        ],
+        acceptable: ["① 全国水平社 ／ ② 同和対策審議会答申 ／ ③ 部落差別解消推進法"],
+        hint: "①「全国〇〇〇」、②「〇〇対策審議会答申」、③「部落差別〇〇〇〇法」の3つすべてを埋めましょう。",
+        explanation: "1922年に「全国水平社」が設立され、1965年の「同和対策審議会答申」で部落差別の解消が国の責務と認められました。2016年には「部落差別解消推進法」が制定・施行されています。"
+      },
+      {
+        id: "eq_08",
+        era: "equality",
+        qType: "descriptive",
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜記述：二風谷ダム訴訟（事情判決）",
+        difficulty: "★★★☆☆",
+        question: "【記述】アイヌ民族の聖地を水没させた二風谷ダム訴訟（1997年札幌地裁判決）において、裁判所は「事情判決の法理」を用い、①土地の強制収用裁決の適法性と、②原告の請求（訴え）の結論について、それぞれどのような判決を下したか。両方含めて説明せよ。",
+        acceptable: [
+          "収用裁決は違法と認めたが、すでにダムが完成し水没しているため訴えは棄却した"
+        ],
+        nuanceGroups: [
+          { label: "① 強制収用裁決自体は「違法」と認定", keywords: ["違法", "不当"] },
+          { label: "② すでに「ダムが完成（水没）」している事情", keywords: ["ダム", "完成", "水没"] },
+          { label: "③ 原告の訴え（取消請求）は「棄却」", keywords: ["棄却", "退け", "認めず", "取り消さず"] }
+        ],
+        nuanceMode: "all",
+        hint: "①強制収用裁決は「違法」としたこと、②すでに「ダムが完成」しているため、③訴え自体は「棄却」したこと、の3要素すべてを含めて完答してください。",
+        explanation: "1997年の札幌地裁判決は、アイヌ民族の文化享有権（憲法13条・国際人権規約B規約27条）を軽視した土地収用裁決を「違法」と断じましたが、すでにダムが完成し水没しているため訴えを「棄却」しました（事情判決の法理）。"
+      },
+      {
+        id: "eq_09",
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜アイヌ民族の権利保障法制【3項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】二風谷ダム判決を受けた法整備として、①1997年に制定された法律、②2019年に制定された法律、③2019年の法律で初めてアイヌ民族が何と明記されたか、を3つすべて答えよ。",
+        slots: [
+          { label: "① 1997年制定法", acceptable: ["アイヌ文化振興法"] },
+          { label: "② 2019年制定法", acceptable: ["アイヌ施策推進法", "アイヌ新法"] },
+          { label: "③ 初めて明記された語", acceptable: ["先住民族"] }
+        ],
+        acceptable: ["① アイヌ文化振興法 ／ ② アイヌ施策推進法 ／ ③ 先住民族"],
+        hint: "プリントP.2の(12)「アイヌ〇〇〇〇法」、(13)「アイヌ〇〇〇〇法」、(14)「〇〇民族」の3つです。",
+        explanation: "1997年に「アイヌ文化振興法」が制定され、2019年には「アイヌ施策推進法」が成立して法律上初めてアイヌが「先住民族」であると明記されました（ただし先住権は明記されず）。"
+      },
+      {
+        id: "eq_10",
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜ジェンダーと積極的格差是正【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】①社会や文化が形成する「男らしさ／女らしさ」などの性差を何というか。また、②構造的に不利益を被っている人々のために一定範囲で特別の機会を提供する措置（女性活躍推進法や候補者男女均等法など）をカタカナで何というか。",
+        slots: [
+          { label: "① 社会的・文化的性差", acceptable: ["ジェンダー"] },
+          { label: "② 積極的格差是正措置", acceptable: ["ポジティブ・アクション", "ポジティブアクション", "アファーマティブ・アクション", "アファーマティブアクション"] }
+        ],
+        acceptable: ["① ジェンダー ／ ② ポジティブ・アクション"],
+        hint: "プリントP.2の(15)「〇〇〇〇〇」と(16)「〇〇〇〇〇・アクション」の2つ完答です。",
+        explanation: "社会的・文化的に形成される性差を「ジェンダー」といい、構造的な格差を是正するため特別の機会を提供する措置を「ポジティブ・アクション」といいます。"
+      },
+      {
+        id: "eq_11",
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜強制不妊手術訴訟【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】1948年に「不良な子孫の出生防止」のため制定され約2.5万人に強制不妊手術が行われた法律は①何か。また、2024年7月3日の最高裁大法廷判決はこの法律を②合憲・違憲のどちらと判断したか。",
+        slots: [
+          { label: "① 1948年制定の法律名", acceptable: ["旧優生保護法", "優生保護法"] },
+          { label: "② 2024年最高裁判決", acceptable: ["違憲", "憲法違反"] }
+        ],
+        acceptable: ["① 旧優生保護法 ／ ② 違憲"],
+        hint: "プリントP.2の(17)と(18)です。両方正しく入力してください。",
+        explanation: "旧優生保護法訴訟において、2024年7月3日の最高裁大法廷は同法を憲法13条・14条に違反する「違憲」であると判断しました。"
+      },
+      {
+        id: "eq_12",
+        era: "equality",
+        qType: "descriptive",
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜記述：旧優生保護法2024年最高裁判決の要点",
+        difficulty: "★★★☆☆",
+        question: "【記述】2024年7月の旧優生保護法訴訟の最高裁大法廷判決が、これまでの判決から一転して国に損害賠償を命じた2つの重要ポイント（①いつの時点で違憲としたか、②20年の期間制限をどう扱ったか）をすべて含めて説明せよ。",
+        acceptable: [
+          "立法行為自体（立法時点）で違憲であったと初めて明記し、20年の除斥期間を理由とせず国に賠償を命じたこと"
+        ],
+        nuanceGroups: [
+          { label: "① 立法時点（制定時）から違憲と明記", keywords: ["立法", "制定", "当時", "時点"] },
+          { label: "② 20年の「除斥期間」の適用を否定", keywords: ["除斥期間", "20年", "期間", "消滅"] },
+          { label: "③ 国に「賠償」を命じた", keywords: ["賠償", "責任"] }
+        ],
+        nuanceMode: "all",
+        hint: "①「立法時点（立法行為自体）が違憲」と明記した点、②20年の「除斥期間」を理由にせず国に「賠償」を命じた点、の両方を含めて完答しましょう。",
+        explanation: "2024年最高裁大法廷判決は、①同法の立法行為自体が違憲（立法時点で違憲）であったと初めて明記し、②不法行為から20年で賠償責任が消滅する「除斥期間」を理由に賠償を認めなかった従来の判断を覆して国に賠償を命じました。"
+      },
+
+      /* ----------------------------------------------------
+         2. 外国人・子ども・LGBTの人権（プリント① P.3〜4）
+         ---------------------------------------------------- */
+      {
+        id: "nr_01",
+        era: "new_rights",
+        qType: "descriptive",
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.3｜記述：夫婦別姓訴訟（2021年最高裁決定）",
+        difficulty: "★★☆☆☆",
+        question: "【記述】夫婦同姓を定める民法第750条について、2021年の最高裁大法廷は①合憲・違憲のどちらと判断したか。また、②夫婦の氏に関する制度のあり方はどこで議論・判断されるべきだとしたか。両方含めて答えよ。",
+        acceptable: [
+          "合憲と判断し、夫婦の氏の制度のあり方は国会で議論・判断されるべきだとした"
+        ],
+        nuanceGroups: [
+          { label: "① 憲法判断（合憲・憲法24条に違反しない）", keywords: ["合憲", "違反しない", "違反せず"] },
+          { label: "② 議論・判断の場（国会・立法府）", keywords: ["国会", "立法府", "立法政策"] }
+        ],
+        nuanceMode: "all",
+        hint: "①「合憲（違反しない）」であることと、②「国会（立法政策）」で議論・判断されるべきであることの2要素をすべて含めて答えましょう。",
+        explanation: "最高裁（2021年決定）は、民法750条の夫婦同姓規定は憲法24条に違反せず「合憲」とし、夫婦の氏に関する制度の選択は「国会で議論・判断されるべき」立法政策の課題であると判示しました。"
+      },
+      {
+        id: "nr_02",
+        era: "new_rights",
+        qType: "multi",
+        ordered: true,
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.3｜外国人の人権と在留資格法【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】①アメリカ人男性が無届転職やベトナム反戦運動参加を理由に在留期間更新を不許可とされた1978年最高裁判決の事件名と、②日本における外国人の在留資格4分類を定めている法律名をそれぞれ答えよ。",
+        slots: [
+          { label: "① 1978年最高裁判決の事件名", acceptable: ["マクリーン事件", "マクリーン訴訟"] },
+          { label: "② 在留資格を定める法律名", acceptable: ["出入国管理法", "出入国管理及び難民認定法", "入管法", "入管難民法"] }
+        ],
+        acceptable: ["① マクリーン事件 ／ ② 出入国管理法（出入国管理及び難民認定法）"],
+        hint: "プリントP.3の(1)「〇〇〇〇〇事件」と(2)「〇〇〇管理法」の2つ完答です。",
+        explanation: "①マクリーン事件（1978年最高裁判決）は外国人の基本的人権保障の限界を示した重要判例であり、②外国人の在留資格は「出入国管理法（出入国管理及び難民認定法）」に基づいています。"
+      },
+      {
+        id: "nr_03",
+        era: "new_rights",
+        qType: "descriptive",
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.3｜記述：マクリーン事件の判旨",
+        difficulty: "★★☆☆☆",
+        question: "【記述】マクリーン事件の最高裁判決では、①外国人の入国や在留の権利は憲法上保障されているか、また②外国人に対する基本的人権はどのような範囲で与えられているとしたか。2点とも含めて説明せよ。",
+        acceptable: [
+          "外国人の入国や在留の権利は憲法上保障されておらず、基本的人権も在留制度の枠内で与えられている"
+        ],
+        nuanceGroups: [
+          { label: "① 入国・在留の権利は憲法上「保障されていない」", keywords: ["保障されていない", "保障されているものではない", "保障されず", "認められていない"] },
+          { label: "② 基本的人権は「在留制度の枠内」で保障", keywords: ["在留制度の枠内", "在留制度の範囲", "在留の枠内"] }
+        ],
+        nuanceMode: "all",
+        hint: "①入国・在留の権利は憲法上「保障されていない」こと、②基本的人権も「在留制度の枠内」で与えられていること、の2点を両方書けば完答です。",
+        explanation: "最高裁は「外国人の入国や在留の権利は憲法上保障されているものではない。基本的人権も在留制度の枠内で与えられている」と判示しました。"
+      },
+      {
+        id: "nr_06",
+        era: "new_rights",
+        qType: "multi",
+        ordered: true,
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.4｜子どもの人権法制と組織【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】すべての子どもや若者が幸せに暮らせる社会の実現を目指して①2022年に制定された基本法の名称と、それを受けて②2023年に発足した行政機関の名称を両方答えよ。",
+        slots: [
+          { label: "① 2022年制定の法律", acceptable: ["こども基本法", "子ども基本法"] },
+          { label: "② 2023年発足の機関", acceptable: ["こども家庭庁", "子ども家庭庁"] }
+        ],
+        acceptable: ["① こども基本法 ／ ② こども家庭庁"],
+        hint: "プリントP.4の(3)「〇〇〇基本法」と(4)「〇〇〇家庭庁」の2つ完答です。",
+        explanation: "2022年に「こども基本法」が制定され、2023年4月に子ども政策の司令塔として「こども家庭庁」が発足しました。"
+      },
+      {
+        id: "nr_08",
+        era: "new_rights",
+        qType: "multi",
+        ordered: true,
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.4｜児童虐待・貧困と子ども【4項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】プリントP.4の空欄(5)〜(8)に入る語句として、①2000年施行の虐待対応の法律、②女性一人が孤立して子育てを担う状況、③子どもの貧困問題に対応する法律、④学業の傍ら大人に代わって家事・育児・介護などを行う18歳未満、をすべて答えよ。",
+        slots: [
+          { label: "① 2000年施行の法律(5)", acceptable: ["児童虐待防止法", "児童虐待の防止等に関する法律"] },
+          { label: "② 孤立した育児状況(6)", acceptable: ["ワンオペ育児", "ワンオペ"] },
+          { label: "③ 貧困対策の法律(7)", acceptable: ["こどもの貧困対策法", "子どもの貧困対策法", "子どもの貧困対策推進法"] },
+          { label: "④ ケアを担う18歳未満(8)", acceptable: ["ヤングケアラー"] }
+        ],
+        acceptable: ["① 児童虐待防止法 ／ ② ワンオペ育児 ／ ③ こどもの貧困対策法 ／ ④ ヤングケアラー"],
+        hint: "①児童虐待防止法、②ワンオペ育児、③こどもの貧困対策法、④ヤングケアラー の4つ完答です。",
+        explanation: "プリントP.4前半の重要キーワード4つ（児童虐待防止法、ワンオペ育児、こどもの貧困対策法、ヤングケアラー）です。"
+      },
+      {
+        id: "nr_09",
+        era: "new_rights",
+        qType: "multi",
+        ordered: true,
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.4｜LGBTと権利保障【3項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】①2015年に渋谷区・世田谷区で導入された同性カップルを家族として扱う制度、②性的少数者を表すアルファベット4文字の略称、③2023年に性的少数者への理解を広めるために制定された法律、を3つすべて答えよ。",
+        slots: [
+          { label: "① 2015年導入の制度(9)", acceptable: ["パートナーシップ制度", "同性パートナーシップ制度"] },
+          { label: "② 性的少数者の略称(10)", acceptable: ["LGBT", "lgbt"] },
+          { label: "③ 2023年制定の法律(11)", acceptable: ["LGBT理解増進法", "性的指向・ジェンダーアイデンティティ理解増進法"] }
+        ],
+        acceptable: ["① パートナーシップ制度 ／ ② LGBT ／ ③ LGBT理解増進法"],
+        hint: "プリントP.4の(9)「〇〇〇〇〇〇〇制度」、(10)「LGBT」、(11)「LGBT〇〇〇〇法」の3つ完答です。",
+        explanation: "2015年に渋谷区・世田谷区で「パートナーシップ制度」が導入され、2023年には「LGBT理解増進法（性的指向・ジェンダーアイデンティティ理解増進法）」が制定されました。"
+      },
+      {
+        id: "nr_11",
+        era: "new_rights",
+        qType: "descriptive",
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.4｜記述：性同一性障害特例法違憲決定(2023)",
+        difficulty: "★★★☆☆",
+        question: "【記述】2023年10月、最高裁大法廷は性同一性障害特例法の性別変更要件④（生殖能力を永続的に欠く状態にあること）について、①どのような自由を侵害しているとし、②憲法第何条に違反する（違憲）と判断したか。両方含めて答えよ。",
+        acceptable: [
+          "身体への侵襲を受けない自由を侵害しており、憲法第13条に違反する（違憲）と判断した"
+        ],
+        nuanceGroups: [
+          { label: "① 身体への侵襲を受けない自由（身体を傷つけられない自由）の侵害", keywords: ["身体", "侵襲", "傷つけ", "生体"] },
+          { label: "② 憲法第13条（幸福追求権・個人の尊重）違反", keywords: ["13条", "十三条", "幸福追求", "個人の尊重"] }
+        ],
+        nuanceMode: "all",
+        hint: "①「身体への侵襲を受けない自由」を侵害している点と、②「憲法第13条（幸福追求権・個人の尊重）」に違反する点の2つを揃えて答えましょう。",
+        explanation: "2023年10月25日の最高裁大法廷決定は、生殖腺除去手術を事実上強制する4号要件について「身体への侵襲を受けない自由」を過剰に制約しており、「憲法第13条」に違反し違憲であると判断しました（外観要件は判断せず）。"
+      },
+
+      /* ----------------------------------------------------
+         3. 地方自治の原則・直接請求権（プリント② P.5〜6）
+         ---------------------------------------------------- */
+      {
+        id: "lp_01",
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.5｜地方自治の思想家と格言【3項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】プリントP.5の(1)〜(3)として、①主著『アメリカの民主政治』を著したフランスの思想家、②主著『近代民主政治』を著したイギリスの政治学者、③②の人物が述べた「地方自治は〇〇〇〇〇〇〇〇〇」という格言、を3つすべて答えよ。",
+        slots: [
+          { label: "① 仏『アメリカの民主政治』", acceptable: ["トクヴィル", "トクビル", "アレクシス・ド・トクヴィル"] },
+          { label: "② 英『近代民主政治』", acceptable: ["ブライス", "ジェームズ・ブライス"] },
+          { label: "③ 地方自治は〜（格言）", acceptable: ["地方自治は民主主義の最良の学校", "民主主義の最良の学校", "民主主義の学校"] }
+        ],
+        acceptable: ["① トクヴィル ／ ② ブライス ／ ③ 地方自治は民主主義の最良の学校"],
+        hint: "①トクヴィル、②ブライス、③（地方自治は）民主主義の最良の学校 の3つ完答です。",
+        explanation: "フランスのトクヴィル（『アメリカの民主政治』）とイギリスのブライス（『近代民主政治』：「地方自治は民主主義の最良の学校」）は地方自治の意義を説いた最重要人物です。"
+      },
+      {
+        id: "lp_02",
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.5｜憲法92条〜94条の原則【3項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】日本国憲法第92条は「①（　）に基づいて、法律でこれを定める」と規定している。また、①を構成する2つの原則のうち、第93条の「住民による政治」を②何自治、第94条の「地方の独立」を③何自治というか。",
+        slots: [
+          { label: "① 憲法92条の文言(4)", acceptable: ["地方自治の本旨"] },
+          { label: "② 住民による政治(5)", acceptable: ["住民自治"] },
+          { label: "③ 地方の独立(6)", acceptable: ["団体自治"] }
+        ],
+        acceptable: ["① 地方自治の本旨 ／ ② 住民自治 ／ ③ 団体自治"],
+        hint: "①地方自治の本旨、②住民自治、③団体自治 の3つをすべて答えましょう。",
+        explanation: "憲法第92条の「地方自治の本旨」は、住民が地域の政治に参加する「住民自治（93条）」と、地方公共団体が国から独立して事務を行う「団体自治（94条）」の2原則から成ります。"
+      },
+      {
+        id: "lp_04",
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.5｜二元代表制と議会・首長の関係【4項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】地方自治では首長と議員がそれぞれ直接選挙で選ばれる二元代表制をとっており、①条例制定権をもつ機関と、②行政執行権をもつ機関が分けられているため、③何制が基本となっているか。また、議会の不信任決議権と首長の議会解散権という④何制の要素も取り入れているか。",
+        slots: [
+          { label: "① 条例制定権をもつ機関(7)", acceptable: ["議会", "地方議会"] },
+          { label: "② 行政執行権をもつ機関(8)", acceptable: ["首長", "知事・市町村長"] },
+          { label: "③ 基本となる政治制度(9)", acceptable: ["大統領制", "二元代表制"] },
+          { label: "④ 取り入れている要素(10)", acceptable: ["議院内閣制"] }
+        ],
+        acceptable: ["① 議会 ／ ② 首長 ／ ③ 大統領制 ／ ④ 議院内閣制"],
+        hint: "プリントP.5の空欄(7)議会、(8)首長、(9)大統領制、(10)議院内閣制 の4つ完答です。",
+        explanation: "地方自治は「議会」と「首長」を住民が別々に直接選挙する「大統領制（二元代表制）」を基本としつつ、不信任決議と議会解散という「議院内閣制」の要素も併せ持っています。"
+      },
+      {
+        id: "lp_05",
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.5｜地方公共団体の2種類【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】地方公共団体の種類について、①都道府県や市町村（政令指定都市を含む）が分類される団体名と、②東京23区（特別区）などが分類される団体名をそれぞれ答えよ。",
+        slots: [
+          { label: "① 都道府県・市町村(11)", acceptable: ["普通地方公共団体"] },
+          { label: "② 特別区（東京23区）など(12)", acceptable: ["特別地方公共団体"] }
+        ],
+        acceptable: ["① 普通地方公共団体 ／ ② 特別地方公共団体"],
+        hint: "①「〇〇地方公共団体」と②「〇〇地方公共団体」の2つ完答です。",
+        explanation: "都道府県・市町村は「普通地方公共団体」、東京23区（特別区）や一部事務組合・広域連合などは「特別地方公共団体」に分類されます。"
+      },
+      {
+        id: "lp_06",
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.6｜直接請求権の4類型【4項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】住民自治を実現する「直接請求権」の4類型（プリントP.6の空欄14〜17）として、①解職・解散請求、②条例の制定・改廃請求（国民発案）、③地方特別法などの住民投票、④事業の管理や出納・事務の監査を求める請求、をそれぞれ答えよ。",
+        slots: [
+          { label: "① 解職・解散請求(14)", acceptable: ["リコール", "解職請求", "リコール（解職請求）"] },
+          { label: "② 条例制定・改廃(15)", acceptable: ["イニシアチブ", "イニシアティブ", "国民発案", "イニシアチブ（国民発案）"] },
+          { label: "③ 住民投票(16)", acceptable: ["レファレンダム", "住民投票", "レファレンダム（住民投票）"] },
+          { label: "④ 事務等の監査(17)", acceptable: ["監査請求", "事務監査請求"] }
+        ],
+        acceptable: ["① リコール ／ ② イニシアチブ ／ ③ レファレンダム ／ ④ 監査請求"],
+        hint: "①リコール、②イニシアチブ、③レファレンダム、④監査請求 の4つすべてを埋めましょう。",
+        explanation: "住民の直接請求権の4類型は、①リコール（解職・解散請求）、②イニシアチブ（国民発案：条例制定・改廃請求）、③レファレンダム（住民投票）、④監査請求です。"
+      },
+      {
+        id: "lp_07",
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.6｜50分の1以上の直接請求権【3項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】「条例の制定・改廃請求」と「事務の監査請求」について、①共通して必要な有権者の署名数の割合、②条例制定・改廃の請求先、③事務監査の請求先、を3つすべて答えよ。",
+        slots: [
+          { label: "① 必要署名数(18)", acceptable: ["50分の1以上", "50分の1", "1/50", "1/50以上"] },
+          { label: "② 条例制定改廃の請求先", acceptable: ["首長", "長", "知事・市町村長"] },
+          { label: "③ 事務監査の請求先", acceptable: ["監査委員"] }
+        ],
+        acceptable: ["① 50分の1以上 ／ ② 首長 ／ ③ 監査委員"],
+        hint: "①「50分の1（以上）」、②「首長」、③「監査委員」の3つ完答です。",
+        explanation: "条例の制定・改廃請求（請求先：首長）と事務の監査請求（請求先：監査委員）は、いずれも有権者の「50分の1以上」の署名が必要です。"
+      },
+      {
+        id: "lp_08",
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.6｜議会解散・首長議員解職請求【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】「議会の解散請求」や「首長・議員の解職請求（リコール）」を行うには、①原則として有権者の何分の1以上の署名を集めて、②どの機関に請求する必要があるか。両方答えよ。",
+        slots: [
+          { label: "① 原則の必要署名数(19)", acceptable: ["3分の1以上", "3分の1", "1/3", "1/3以上"] },
+          { label: "② 請求先の機関", acceptable: ["選挙管理委員会", "選管"] }
+        ],
+        acceptable: ["① 3分の1以上 ／ ② 選挙管理委員会"],
+        hint: "①「3分の1（以上）」と②「選挙管理委員会」の両方が揃って完答正解となります。",
+        explanation: "議会の解散請求および首長・議員の解職請求は、原則として有権者の「3分の1以上」の署名を集めて「選挙管理委員会」に請求し、住民投票で過半数の同意により解散・失職となります（副知事や監査委員等の解職請求は3分の1以上で「首長」宛て）。"
+      },
+      {
+        id: "lp_09",
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.6｜住民投票の3類型と政治利用【3項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】プリントP.6の住民投票の空欄(20)〜(22)として、①憲法第95条に基づき一つの自治体のみに適用される法律の名称、②自治体の条例に基づく重要政策の住民投票における法的拘束力の有無（あり／なし）、③為政者が自身の統治を正当化するために行う住民投票のカタカナ呼称、をすべて答えよ。",
+        slots: [
+          { label: "① 憲法95条の法律(20)", acceptable: ["特別法", "地方特別法"] },
+          { label: "② 政策住民投票の法的拘束力(21)", acceptable: ["なし", "ない", "法的拘束力なし"] },
+          { label: "③ 統治正当化の投票(22)", acceptable: ["プレビシット", "プレピシット"] }
+        ],
+        acceptable: ["① 特別法（地方特別法） ／ ② なし ／ ③ プレビシット"],
+        hint: "①特別法、②なし、③プレビシット の3つ完答です。",
+        explanation: "憲法95条の「地方特別法」の住民投票やリコール投票には法的拘束力がありますが、自治体の条例による重要政策の住民投票には法的拘束力は「なし」です。また為政者が統治の正当化に利用する投票を「プレビシット」と呼びます。"
+      },
+      {
+        id: "lp_11",
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.6｜国の法制化に先立った条例【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】地方自治体の条例が国の法制化に先立った例として、①1982年に山形県金山町が全国に先駆けて導入した制度と、②1990年に神奈川県川崎市が導入した「第三者が行政への苦情を受け付け調査・是正勧告を行うスウェーデン発祥の制度」を両方答えよ。",
+        slots: [
+          { label: "① 1982年山形県金山町", acceptable: ["情報公開制度", "情報公開条例", "情報公開"] },
+          { label: "② 1990年神奈川県川崎市", acceptable: ["オンブズマン制度", "オンブズマン", "オンブズパーソン制度"] }
+        ],
+        acceptable: ["① 情報公開制度 ／ ② オンブズマン制度"],
+        hint: "①「〇〇公開制度」、②「〇〇〇〇マン制度」の2つ完答です。",
+        explanation: "1982年山形県金山町の「情報公開制度（国は1999年情報公開法）」と、1990年神奈川県川崎市の「オンブズマン制度（国レベルは未整備）」は、自治体の条例が国に先駆けた代表例です。"
+      },
+
+      /* ----------------------------------------------------
+         4. 地方分権・地方財政・特区制度（プリント③ P.7〜8）
+         ---------------------------------------------------- */
+      {
+        id: "lf_01",
+        era: "local_finance",
+        qType: "multi",
+        ordered: true,
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.7｜1999年地方分権一括法と事務再編【4項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】1999年に成立した①何法によって、かつて知事や市町村長を国の機関として処理させていた②何事務が廃止され、自治体の判断で行う③何事務と、国本来の役割を法律により自治体が処理する④何事務の2つに再編されたか。4つすべて答えよ。",
+        slots: [
+          { label: "① 1999年成立の法律(1)", acceptable: ["地方分権一括法"] },
+          { label: "② 廃止された事務(2)", acceptable: ["機関委任事務"] },
+          { label: "③ 自治体の判断で行う事務(3)", acceptable: ["自治事務"] },
+          { label: "④ 国から受託する事務(4)", acceptable: ["法定受託事務"] }
+        ],
+        acceptable: ["① 地方分権一括法 ／ ② 機関委任事務 ／ ③ 自治事務 ／ ④ 法定受託事務"],
+        hint: "プリントP.7の(1)地方分権一括法、(2)機関委任事務、(3)自治事務、(4)法定受託事務 の4つ完答です。",
+        explanation: "1999年「地方分権一括法」により「機関委任事務」が廃止され、介護保険・都市計画などの「自治事務」と、国政選挙・旅券交付・戸籍などの「法定受託事務」の2つに整理されました。"
+      },
+      {
+        id: "lf_03",
+        era: "local_finance",
+        qType: "multi",
+        ordered: true,
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.7｜地方の歳入構造【3項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】地方公共団体の歳入のうち、①地方税など地方が自主的に調達できる財源を何というか。また、②国からの交付等に頼る財源を何というか。さらに、③①が歳入の3〜4割しかない現状は何と呼ばれているか。3つすべて答えよ。",
+        slots: [
+          { label: "① 自主的に調達できる財源(6)", acceptable: ["自主財源"] },
+          { label: "② 国交付等による財源(7)", acceptable: ["依存財源"] },
+          { label: "③ 3〜4割しかない現状の呼称(8)", acceptable: ["三割自治", "3割自治"] }
+        ],
+        acceptable: ["① 自主財源 ／ ② 依存財源 ／ ③ 三割自治（3割自治）"],
+        hint: "プリントP.7の(6)自主財源、(7)依存財源、(8)三割自治 の3つ完答です。",
+        explanation: "地方の歳入は「自主財源（地方税など）」と「依存財源（地方交付税・国庫支出金・地方債など）」に分かれ、自主財源が3〜4割にとどまるため「三割自治（3割自治）」と呼ばれます。"
+      },
+      {
+        id: "lf_05",
+        era: "local_finance",
+        qType: "descriptive",
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.7｜記述：地方交付税交付金と国庫支出金の違い",
+        difficulty: "★★☆☆☆",
+        question: "【記述】「地方交付税交付金」と「国庫支出金（補助金）」の違いについて、①地方交付税交付金の目的・使途の特徴と、②国庫支出金の使途の特徴の両方に触れて説明せよ。",
+        acceptable: [
+          "地方交付税交付金は自治体間の収入格差を是正するため配分され使途が定められていないが、国庫支出金は国によって使途が特定されている"
+        ],
+        nuanceGroups: [
+          { label: "① 地方交付税交付金は「使途が定められていない（自由・一般財源）」", keywords: ["定められていない", "特定されていない", "自由", "制限がない", "制限なし", "一般財源"] },
+          { label: "② 国庫支出金は「使途が特定されている（決められている・特定財源）」", keywords: ["特定されている", "定められている", "決められている", "指定", "特定財源", "ひもつき"] }
+        ],
+        nuanceMode: "all",
+        hint: "①地方交付税交付金は「使途が定められていない（自由）」点、②国庫支出金は「国によって使途が特定されている（決められている）」点、の2つを対比して完答しましょう。",
+        explanation: "地方交付税交付金は財政力格差是正のために配分され「使途は定められていない（一般財源）」のに対し、国庫支出金は「国によって使途が特定されている（特定財源）」という決定的な違いがあります。"
+      },
+      {
+        id: "lf_07",
+        era: "local_finance",
+        qType: "descriptive",
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.8｜記述：市町村合併（平成の大合併）のメリット・デメリット",
+        difficulty: "★★☆☆☆",
+        question: "【記述】1999年〜2010年の市町村合併（平成の大合併）について、プリントに挙げられている①メリットと②デメリットを両方とも挙げて説明せよ。",
+        acceptable: [
+          "メリットは公務員や議員数の削減による財政負担の軽減（広域的な町づくり）、デメリットは住民の声が行政に届きにくくなること（伝統文化の衰退）"
+        ],
+        nuanceGroups: [
+          { label: "① メリット（財政負担の軽減・公務員や議員削減・広域的町づくり・公共施設利用）", keywords: ["財政負担", "軽減", "削減", "公務員", "議員", "広域", "公共施設"] },
+          { label: "② デメリット（住民の声が届きにくくなる・地域の伝統文化の衰退）", keywords: ["声", "届きにく", "意見", "伝統", "文化", "衰退"] }
+        ],
+        nuanceMode: "all",
+        hint: "メリット（財政負担の軽減・公務員や議員の削減・広域的な町づくり等）と、デメリット（住民の声が届きにくくなる・伝統文化の衰退等）の両方を書いて完答となります。",
+        explanation: "平成の大合併のメリットは「利用可能な公共施設の増加・広域的な町づくり・公務員や議員数の削減による財政負担の軽減」、デメリットは「住民の声が行政に届きにくくなる・地域の伝統文化が衰退する」ことです。"
+      },
+      {
+        id: "lf_08",
+        era: "local_finance",
+        qType: "multi",
+        ordered: true,
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.8｜三位一体の改革【4項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】2002年からの「骨太の方針」で打ち出された地方財政改革の名称は①何か。また、その3つの内容である「②（　）の削減・廃止」「国から地方への③（　）」「④（　）の見直し」をすべて答えよ。",
+        slots: [
+          { label: "① 2002年の改革名(20)", acceptable: ["三位一体の改革", "三位一体改革", "3位一体の改革"] },
+          { label: "② 削減・廃止された補助金(21)", acceptable: ["国庫支出金"] },
+          { label: "③ 国から地方への移譲(22)", acceptable: ["税源移譲", "財源移譲"] },
+          { label: "④ 見直し・削減された交付金(23)", acceptable: ["地方交付税交付金", "地方交付税"] }
+        ],
+        acceptable: ["① 三位一体の改革 ／ ② 国庫支出金 ／ ③ 税源移譲 ／ ④ 地方交付税交付金"],
+        hint: "プリントP.8の(20)三位一体の改革、(21)国庫支出金、(22)税源移譲、(23)地方交付税交付金 の4つ完答です。",
+        explanation: "「三位一体の改革」は、①国庫支出金の削減・廃止（-4.7兆円）、②国から地方への税源移譲（+3兆円）、③地方交付税交付金の見直し（-5.1兆円）の3つを一体として行った改革です。"
+      },
+      {
+        id: "lf_09",
+        era: "local_finance",
+        qType: "multi",
+        ordered: true,
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.8｜特区制度と規制緩和【3項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】地域を限定して規制緩和を行う特区制度について、①2002年に始まった特区、②2013年に国主導で大規模な支援を行うために始まった特区、③特区によって崩そうとした省庁や業界団体の強固な規制の呼称、を3つすべて答えよ。",
+        slots: [
+          { label: "① 2002年開始の特区(24)", acceptable: ["構造改革特区"] },
+          { label: "② 2013年開始の特区(25)", acceptable: ["国家戦略特区"] },
+          { label: "③ 省庁・業界団体の規制(26)", acceptable: ["岩盤規制"] }
+        ],
+        acceptable: ["① 構造改革特区 ／ ② 国家戦略特区 ／ ③ 岩盤規制"],
+        hint: "プリントP.8の(24)構造改革特区、(25)国家戦略特区、(26)岩盤規制 の3つ完答です。",
+        explanation: "2002年の「構造改革特区」、2011年の「総合特区」に続き、2013年には国主導で省庁や業界団体の「岩盤規制」を打破する「国家戦略特区」が導入されました。"
+      },
+      {
+        id: "lf_11",
+        era: "local_finance",
+        qType: "multi",
+        ordered: true,
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.8｜ふるさと納税と返礼品制限【3項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】好きな自治体に寄附すると居住自治体の住民税が控除される①何という制度があるか。また、過度な返礼品競争を防ぐため総務省が設けた制限は「返礼品は②（　）かつ③寄付額の（　）以下」か。3つすべて答えよ。",
+        slots: [
+          { label: "① 寄附・税控除の制度名(28)", acceptable: ["ふるさと納税"] },
+          { label: "② 返礼品の品目制限(29)", acceptable: ["地場産品"] },
+          { label: "③ 寄付額に対する割合上限", acceptable: ["3割", "3割以下", "三割", "30%"] }
+        ],
+        acceptable: ["① ふるさと納税 ／ ② 地場産品 ／ ③ 3割（以下）"],
+        hint: "①ふるさと納税、②地場産品、③3割（以下）の3つ完答です。",
+        explanation: "「ふるさと納税」では都市部の住民税流出や過度な返礼品競争が問題となったため、総務省は返礼品を「①地場産品」かつ「②寄付額の3割以下」に制限しました。"
+      },
+      {
+        id: "lf_12",
+        era: "local_finance",
+        qType: "descriptive",
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.8｜記述：ふるさと納税の2つのデメリット【完答記述】",
+        difficulty: "★★☆☆☆",
+        question: "【記述】「ふるさと納税」についてプリントP.8に挙げられている2つのデメリット（①都市部への影響、②返礼品をめぐる問題）を両方とも説明せよ。",
+        acceptable: [
+          "都市部の住民税収入が減少することと、過度な返礼品を設定する競争が生じること"
+        ],
+        nuanceGroups: [
+          { label: "① 都市部の自治体の住民税収入が減少（流出）すること", keywords: ["都市", "都会", "住民税", "税収", "減", "流出"] },
+          { label: "② 過度な返礼品を設定する（返礼品競争が過熱する）こと", keywords: ["返礼品", "お礼", "過度", "競争", "豪華"] }
+        ],
+        nuanceMode: "all",
+        hint: "①「都市部の住民税収入が減少する」ことと、②「過度な返礼品を設定する」ことの2つとも書けて完答正解になります！",
+        explanation: "ふるさと納税のデメリットは、①都市部の住民税収入が減少すること、②自治体が寄付を集めるため過度な返礼品を設定すること、の2点です。"
+      },
+
+      /* ----------------------------------------------------
+         5. 単一用語（一問一答）強化問題（プリント全8ページ）
+         ---------------------------------------------------- */
+      {
+        id: "tm_01",
+        era: "equality",
+        qType: "term",
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜基本的人権の思想",
+        difficulty: "★☆☆☆☆",
+        question: "ロックやルソーらが唱えた、人権は「生まれながらにして与えられたもの」とする思想を何というか。",
+        acceptable: ["自然権思想", "自然権"],
+        nuanceGroups: [{ label: "自然権思想", keywords: ["自然権"] }],
+        nuanceMode: "all",
+        hint: "「〇〇権思想」といいます。",
+        explanation: "人権が国家や憲法より前に生まれながらにして人間に備わっているとする思想を「自然権思想」といい、基本的人権の「普遍性」の根拠となっています。"
+      },
+      {
+        id: "tm_02",
+        era: "equality",
+        qType: "term",
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜部落差別の解消法",
+        difficulty: "★★☆☆☆",
+        question: "2016年に制定・施行された、「部落差別のない社会の実現」を目的とする法律の名称は何か。",
+        acceptable: ["部落差別解消推進法", "部落差別の解消の推進に関する法律"],
+        nuanceGroups: [{ label: "部落差別解消推進法", keywords: ["部落差別解消推進法"] }],
+        nuanceMode: "all",
+        hint: "「部落差別〇〇〇〇法」です。1965年の同和対策審議会答申と区別しましょう。",
+        explanation: "2016年に「部落差別解消推進法」が制定・施行され、相談体制の充実や教育・啓発、実態調査などが定められました。"
+      },
+      {
+        id: "tm_03",
+        era: "equality",
+        qType: "term",
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜アイヌ施策推進法",
+        difficulty: "★★☆☆☆",
+        question: "2019年に制定された、アイヌ民族を法律上初めて「先住民族」と明記した法律の名称は何か。",
+        acceptable: ["アイヌ施策推進法", "アイヌ新法"],
+        nuanceGroups: [{ label: "アイヌ施策推進法", keywords: ["アイヌ施策推進法", "アイヌ新法"] }],
+        nuanceMode: "all",
+        hint: "1997年のアイヌ文化振興法に代わり、2019年に制定された「アイヌ〇〇〇〇法」です。",
+        explanation: "2019年制定の「アイヌ施策推進法」で初めてアイヌが「先住民族」であると法文に明記されました（ただし先住権は明記されず）。"
+      },
+      {
+        id: "tm_04",
+        era: "equality",
+        qType: "term",
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜積極的格差是正措置",
+        difficulty: "★★☆☆☆",
+        question: "社会的・構造的に不利益を被っている人々のために、一定の範囲で特別の機会を提供するなどして実質的平等の実現を図る措置をカタカナで何というか。",
+        acceptable: ["ポジティブ・アクション", "ポジティブアクション", "アファーマティブ・アクション", "アファーマティブアクション"],
+        nuanceGroups: [{ label: "ポジティブ・アクション", keywords: ["ポジティブアクション", "アファーマティブアクション"] }],
+        nuanceMode: "all",
+        hint: "プリントP.2(16)の「〇〇〇〇〇・アクション」です。",
+        explanation: "女性活躍推進法や候補者男女均等法のように、構造的不利益を是正するため特別の機会を提供する措置を「ポジティブ・アクション」といいます。"
+      },
+      {
+        id: "tm_05",
+        era: "new_rights",
+        qType: "term",
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.3｜外国人の政治活動と在留更新",
+        difficulty: "★☆☆☆☆",
+        question: "1978年の最高裁判決で「外国人の基本的人権も在留制度の枠内で与えられている」として法務大臣の在留期間更新不許可処分を適法とした事件の名称は何か。",
+        acceptable: ["マクリーン事件", "マクリーン訴訟"],
+        nuanceGroups: [{ label: "マクリーン事件", keywords: ["マクリーン"] }],
+        nuanceMode: "all",
+        hint: "アメリカ人男性の名前から「〇〇〇〇〇事件」と呼ばれます。",
+        explanation: "マクリーン事件（1978年最高裁判決）は、外国人の人権保障が「在留制度の枠内」にとどまることを示した最重要判例です。"
+      },
+      {
+        id: "tm_06",
+        era: "new_rights",
+        qType: "term",
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.4｜子どもの人権とケア負担",
+        difficulty: "★☆☆☆☆",
+        question: "家庭の事情により、学業のかたわら大人に代わって家事・育児・介護などを日常的に行っている18歳未満の子どもを何と呼ぶか。",
+        acceptable: ["ヤングケアラー"],
+        nuanceGroups: [{ label: "ヤングケアラー", keywords: ["ヤングケアラー"] }],
+        nuanceMode: "all",
+        hint: "カタカナ7文字で「〇〇〇ケアラー」といいます。",
+        explanation: "学業の傍ら大人に代わって家事・育児・介護などを担う18歳未満の子どもを「ヤングケアラー」と呼び、学業や進路への影響が社会問題となっています。"
+      },
+      {
+        id: "tm_07",
+        era: "local_principle",
+        qType: "term",
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.5｜憲法92条の理念",
+        difficulty: "★☆☆☆☆",
+        question: "日本国憲法第92条において、地方公共団体の組織及び運営に関する事項は何に基づいて法律で定めるとされているか。「住民自治」と「団体自治」の2原則を合わせた憲法上の文言を答えよ。",
+        acceptable: ["地方自治の本旨"],
+        nuanceGroups: [{ label: "地方自治の本旨", keywords: ["地方自治の本旨"] }],
+        nuanceMode: "all",
+        hint: "6文字で「地方自治の〇〇」です。",
+        explanation: "憲法第92条は「地方自治の本旨に基づいて、法律でこれを定める」と規定しており、住民自治と団体自治の2つがその内容です。"
+      },
+      {
+        id: "tm_08",
+        era: "local_principle",
+        qType: "term",
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.6｜住民投票の政治利用",
+        difficulty: "★★★☆☆",
+        question: "住民投票が、為政者（権力者）自身の統治を正当化するために利用されてしまうことを、カタカナで何と呼ぶか。",
+        acceptable: ["プレビシット", "プレピシット"],
+        nuanceGroups: [{ label: "プレビシット", keywords: ["プレビシット", "プレピシット"] }],
+        nuanceMode: "all",
+        hint: "プリントP.6(22)の用語で「プレ〇〇〇〇」といいます。レファレンダムとの違いに注意！",
+        explanation: "為政者が自らの権力や統治を正当化する手段として行う人民投票・住民投票を「プレビシット」といい、住民の自治能力が問われます。"
+      },
+      {
+        id: "tm_09",
+        era: "local_principle",
+        qType: "term",
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.6｜行政監視の第三者機関",
+        difficulty: "★★☆☆☆",
+        question: "19世紀初めにスウェーデンで始まり、日本では1990年に神奈川県川崎市が初めて導入した、高い識見と権威を備えた第三者が行政に対する住民の苦情を受け付け調査・是正勧告を行う制度を何というか。",
+        acceptable: ["オンブズマン制度", "オンブズマン", "オンブズパーソン制度"],
+        nuanceGroups: [{ label: "オンブズマン制度", keywords: ["オンブズマン", "オンブズパーソン"] }],
+        nuanceMode: "all",
+        hint: "スウェーデン語で「代理人・代弁者」を意味する「〇〇〇〇マン制度」です。",
+        explanation: "1990年に川崎市が条例で導入した「オンブズマン制度」は、第三者が中立的な立場から行政への苦情を調査し簡易迅速に是正勧告を行う制度です。"
+      },
+      {
+        id: "tm_10",
+        era: "local_finance",
+        qType: "term",
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.7｜1999年地方分権改革で廃止された事務",
+        difficulty: "★★☆☆☆",
+        question: "1999年の地方分権一括法によって廃止された、都道府県知事や市町村長を「国の機関」として国の指揮監督下で事務を処理させていた制度を何というか。",
+        acceptable: ["機関委任事務"],
+        nuanceGroups: [{ label: "機関委任事務", keywords: ["機関委任事務"] }],
+        nuanceMode: "all",
+        hint: "「〇〇委任事務」です。廃止後に「自治事務」と「法定受託事務」に再編されました。",
+        explanation: "国と地方の上下・主従関係の象徴とされた「機関委任事務」は1999年の地方分権一括法で全廃され、対等・協力の関係のもと「自治事務」と「法定受託事務」に再編されました。"
+      }
+    ];
+
+    /* =========================================================================
+       混同しやすい対概念ペア辞書（不正解時のピンポイント指摘用）
+       ========================================================================= */
+    const CONFUSION_PAIRS = [
+      { a: "住民自治", b: "団体自治", advice: "「住民自治（93条）」は住民が選挙や直接請求で政治に参加すること、「団体自治（94条）」は自治体が国から独立して条例制定や行政を行うことです。" },
+      { a: "法適用の平等", b: "法内容の平等", advice: "「法適用の平等」は同じ法を等しく適用すること（行政・司法を拘束）、「法内容の平等」は差別的な法律自体を作らないこと（国会＝立法を拘束）です。" },
+      { a: "機会の平等", b: "結果の平等", advice: "「機会の平等（形式的平等）」はスタートラインを一律公平に扱うこと、「結果の平等（実質的平等）」は生じた格差に着目して是正を図ることです。" },
+      { a: "形式的平等", b: "実質的平等", advice: "「形式的平等（機会の平等）」は一律の取り扱い、「実質的平等（結果の平等）」は格差是正の配慮を行うことです。" },
+      { a: "地方交付税交付金", b: "国庫支出金", advice: "「地方交付税交付金」は使途が定められていない一般財源、「国庫支出金」は国によって使途が特定されている特定財源（ひもつき補助金）です。" },
+      { a: "自治事務", b: "法定受託事務", advice: "「自治事務」は都市計画や介護保険など自治体自身の判断で行う事務、「法定受託事務」は国政選挙や旅券（パスポート）・戸籍など国本来の事務を法律で受託するものです。" },
+      { a: "機関委任事務", b: "法定受託事務", advice: "「機関委任事務」は1999年地方分権一括法で【廃止】された旧制度で、現在は「自治事務」と「法定受託事務」に再編されています。" },
+      { a: "自主財源", b: "依存財源", advice: "「自主財源」は地方税など自治体が自ら集める財源（約3〜4割＝三割自治）、「依存財源」は地方交付税・国庫支出金・地方債など国に頼る財源です。" },
+      { a: "普通地方公共団体", b: "特別地方公共団体", advice: "「普通地方公共団体」は都道府県・市町村、「特別地方公共団体」は東京23区（特別区）や広域連合などです。" },
+      { a: "50分の1", b: "3分の1", advice: "「条例の制定・改廃」と「監査請求」は有権者の【50分の1以上】、重い決定である「議会解散」や「首長・議員・主要公務員の解職（リコール）」は【3分の1以上】です。" },
+      { a: "首長", b: "選挙管理委員会", advice: "条例制定改廃と副知事等の解職請求先は「首長」、議会解散と首長・議員の解職請求先は「選挙管理委員会」、事務監査請求先は「監査委員」です。" },
+      { a: "首長", b: "監査委員", advice: "事務の監査請求の提出先は首長ではなく「監査委員」（必要署名数は50分の1以上）です。" },
+      { a: "合憲", b: "違憲", advice: "最高裁が「合憲」としたのは夫婦同姓規定（民法750条）やマクリーン事件の処分で、「違憲」としたのは尊属殺・婚外子相続分・再婚禁止期間100日超・旧優生保護法・性同一性障害特例法の生殖能力要件です。" },
+      { a: "構造改革特区", b: "国家戦略特区", advice: "2002年開始の自治体・民間提案型が「構造改革特区」、2013年開始の国主導で岩盤規制を崩す大規模特区が「国家戦略特区」です。" },
+      { a: "トクヴィル", b: "ブライス", advice: "『アメリカの民主政治』を著したフランスの思想家が「トクヴィル」、『近代民主政治』で「地方自治は民主主義の最良の学校」と述べたイギリスの学者が「ブライス」です。" },
+      { a: "アイヌ文化振興法", b: "アイヌ施策推進法", advice: "1997年制定が「アイヌ文化振興法」、2019年に初めてアイヌを「先住民族」と明記したのが「アイヌ施策推進法」です。" },
+      { a: "情報公開制度", b: "オンブズマン制度", advice: "1982年に山形県金山町が先駆けたのが「情報公開制度」、1990年に神奈川県川崎市が導入したスウェーデン発祥の苦情調査制度が「オンブズマン制度」です。" },
+      { a: "リコール", b: "イニシアチブ", advice: "「リコール」は解職・解散請求、「イニシアチブ（国民発案）」は条例の制定・改廃請求、「レファレンダム」は住民投票です。" },
+      { a: "レファレンダム", b: "プレビシット", advice: "「レファレンダム」は重要事項の住民投票、「プレビシット」は為政者が自身の統治を正当化するために利用する投票を指します。" }
+    ];
+
+    /* =========================================================================
+       内蔵スマート問題合成エンジンのシードバンク（プリント全8ページの細部・表・判例）
+       API通信なしでも即座に重複のない新問題を無限合成できる知識グラフ
+       ========================================================================= */
+    const PROCEDURAL_BANK = [
+      {
+        era: "equality",
+        qType: "multi",
+        ordered: false,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜自然権思想の思想家【2名完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答（順不同）】プリントP.1の手書きメモに記されている、「自然権思想」を唱えた代表的な近代ヨーロッパの思想家を2人答えよ。",
+        slots: [
+          { label: "思想家1", acceptable: ["ロック", "ジョン・ロック"] },
+          { label: "思想家2", acceptable: ["ルソー", "ジャン＝ジャック・ルソー"] }
+        ],
+        acceptable: ["ロック・ルソー（順不同・2名完答）"],
+        hint: "イギリスの「〇〇〇」とフランスの「〇〇〇」の2人です。",
+        explanation: "自然権思想（生まれながらにして自由・平等の人権を持つとする思想）の代表的人物として、プリントにはロックとルソーが挙げられています。"
+      },
+      {
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜平等の2種類【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】平等の2種類のうち、①不合理な差別を禁止して全ての人々を一律公平に扱う平等（形式的平等）と、②人々の間にある格差に着目してその是正を図る平等（実質的平等）を、それぞれ「〇〇の平等」という形で答えよ。",
+        slots: [
+          { label: "① 形式的平等(4)", acceptable: ["機会の平等", "機会"] },
+          { label: "② 実質的平等(5)", acceptable: ["結果の平等", "結果"] }
+        ],
+        acceptable: ["① 機会の平等 ／ ② 結果の平等"],
+        hint: "①「〇〇の平等」、②「〇〇の平等」の2つ完答です。",
+        explanation: "形式的平等を「機会の平等」、実質的平等を「結果の平等」といいます。"
+      },
+      {
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.1｜憲法第14条の用語【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】日本国憲法第14条は「すべて国民は、法の下に平等であつて、人種、信条、性別、①（　）又は②（　）により、政治的、経済的又は社会的関係において、差別されない」と定める。①人が社会において占めている地位や職業、②家柄を意味する語句をそれぞれ答えよ。",
+        slots: [
+          { label: "① 社会における地位・職業", acceptable: ["社会的身分"] },
+          { label: "② 家柄", acceptable: ["門地"] }
+        ],
+        acceptable: ["① 社会的身分 ／ ② 門地"],
+        hint: "①は「社会的〇〇」、②は漢字2文字で「〇〇（もんち）」です。",
+        explanation: "憲法第14条1項が列挙する差別禁止事由は「人種、信条、性別、社会的身分、門地（家柄）」の5つです。"
+      },
+      {
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜女性差別に関する最高裁判例【2項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】女性差別に関する最高裁判決について、①2014年に妊娠・出産を理由とした降格を違法・無効とした訴訟名と、②2015年に最高裁が100日を超える部分を違憲とし2022年の民法改正で全廃された規定、をそれぞれ答えよ。",
+        slots: [
+          { label: "① 2014年最高裁判決の訴訟名", acceptable: ["マタニティ・ハラスメント訴訟", "マタニティハラスメント訴訟", "マタハラ訴訟"] },
+          { label: "② 2015年違憲・2022年廃止の規定", acceptable: ["再婚禁止期間", "女性の再婚禁止期間", "女性再婚禁止期間規定"] }
+        ],
+        acceptable: ["① マタニティ・ハラスメント訴訟 ／ ② 再婚禁止期間（女性の再婚禁止期間）"],
+        hint: "①は「〇〇〇〇〇・ハラスメント訴訟」、②は女性にのみ課されていた「〇〇禁止期間」です。",
+        explanation: "2014年のマタニティ・ハラスメント訴訟では妊娠・出産を理由とする降格が違法・無効とされ、2015年の女性再婚禁止期間規定違憲判決を受けて2022年の民法改正で再婚禁止期間自体が廃止されました。"
+      },
+      {
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜女子差別撤廃条約と国内法整備【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】1985年の女子差別撤廃条約批准を受けて、①同1985年に雇用分野の男女平等を定めた法律と、②1999年に男女が対等な構成員としてあらゆる分野に参画する社会を目指して制定された基本法を両方答えよ。",
+        slots: [
+          { label: "① 1985年制定法", acceptable: ["男女雇用機会均等法"] },
+          { label: "② 1999年制定法", acceptable: ["男女共同参画社会基本法"] }
+        ],
+        acceptable: ["① 男女雇用機会均等法 ／ ② 男女共同参画社会基本法"],
+        hint: "①「男女〇〇〇〇均等法」、②「男女〇〇〇〇社会基本法」の2つ完答です。",
+        explanation: "1985年の女子差別撤廃条約批准に伴い「男女雇用機会均等法（1985年）」が制定され、1999年には「男女共同参画社会基本法」が制定されました。"
+      },
+      {
+        era: "equality",
+        qType: "multi",
+        ordered: false,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜ポジティブ・アクションの2法【2項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答（順不同）】プリントP.2において、ジェンダー意識の解消に向けた「ポジティブ・アクション」の具体例として挙げられている法律を2つとも答えよ。",
+        slots: [
+          { label: "法律1", acceptable: ["女性活躍推進法"] },
+          { label: "法律2", acceptable: ["候補者男女均等法", "政治分野における男女共同参画推進法"] }
+        ],
+        acceptable: ["女性活躍推進法・候補者男女均等法（順不同・2法完答）"],
+        hint: "職場での活躍を進める「女性〇〇〇〇法」と、選挙における「〇〇〇男女均等法」の2つです。",
+        explanation: "ポジティブ・アクション（積極的格差是正措置）の例として「女性活躍推進法」と「候補者男女均等法」が制定されています。"
+      },
+      {
+        era: "equality",
+        qType: "multi",
+        ordered: true,
+        eraName: "①平等原則・差別判例",
+        subtag: "プリント① P.2｜ハンセン病訴訟【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】1943年の治療薬開発後も日本では隔離政策や断種・不妊手術などが続けられた①何という病気の元患者らが国を提訴し、②2001年にどこの地方裁判所が国の隔離政策を違憲とする判決を下したか。",
+        slots: [
+          { label: "① 対象となった疾患名", acceptable: ["ハンセン病"] },
+          { label: "② 2001年違憲判決の地裁名", acceptable: ["熊本地裁", "熊本地方裁判所"] }
+        ],
+        acceptable: ["① ハンセン病 ／ ② 熊本地裁（熊本地方裁判所）"],
+        hint: "①「〇〇〇〇病」、②九州の「〇〇地裁」です。",
+        explanation: "ハンセン病訴訟では、2001年に熊本地裁が国の隔離政策継続（らい予防法）を違憲と判断し、国は控訴を断念して元患者や遺族らと和解・補償を行いました。"
+      },
+      {
+        era: "new_rights",
+        qType: "multi",
+        ordered: true,
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.3｜定住外国人の権利認否表【3項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】プリントP.3の「定住外国人の権利」表に基づき、①国公立の小中高で外国人が教員として任用される際の職名、②不法滞在者にも適用される唯一の社会保険、③定住外国人に対する生活保護がどのような判断によって支給されているか、を3つすべて答えよ。",
+        slots: [
+          { label: "① 国公立学校教員の職名", acceptable: ["常勤講師", "講師"] },
+          { label: "② 不法滞在者にも適用される保険", acceptable: ["労災保険", "労働者災害補償保険"] },
+          { label: "③ 生活保護の支給根拠", acceptable: ["行政の裁量", "裁量", "行政裁量"] }
+        ],
+        acceptable: ["① 常勤講師 ／ ② 労災保険 ／ ③ 行政の裁量"],
+        hint: "①教諭ではなく「〇〇講師」、②仕事中の怪我に対する「〇〇保険」、③法律上の権利ではなく「〇〇の裁量」です。",
+        explanation: "プリントP.3の表の通り、国公立学校では「常勤講師」として任用され、不法滞在者には「労災保険」のみ適用、生活保護は「行政の裁量」によって支給されています。"
+      },
+      {
+        era: "new_rights",
+        qType: "multi",
+        ordered: false,
+        eraName: "②外国人・子・LGBT",
+        subtag: "プリント① P.4｜子どもの権利条約の4原則【4項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答（順不同）】日本が1994年に批准した「子どもの権利条約」の4つの一般原則（①命を守られ成長できること、②子どもにとって最も良いこと、③意見を表明し参加できること、④差別されないこと）を4つすべて答えよ。",
+        slots: [
+          { label: "原則1（命と成長）", acceptable: ["生命、生存及び発達に対する権利", "生命・生存・発達の権利", "生存及び発達の権利", "命を守られ成長できる権利"] },
+          { label: "原則2（最も良いこと）", acceptable: ["子どもの最善の利益", "最善の利益"] },
+          { label: "原則3（意見表明）", acceptable: ["子どもの意見の尊重", "意見の尊重", "意見表明権"] },
+          { label: "原則4（平等）", acceptable: ["差別の禁止", "差別されない権利"] }
+        ],
+        acceptable: ["①生命、生存及び発達に対する権利 ／ ②子どもの最善の利益 ／ ③子どもの意見の尊重 ／ ④差別の禁止"],
+        hint: "「生命、生存及び発達に対する権利」「子どもの最善の利益」「子どもの意見の尊重」「差別の禁止」の4つです。",
+        explanation: "子どもの権利条約（1994年批准）の4つの一般原則は、後の「こども基本法（2022年）」の基本理念にも引き継がれています。"
+      },
+      {
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.5｜議会の不信任決議と首長の再議権【3項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】地方議会が首長に対して不信任決議を行う場合、議員数の①何分のいくつ以上が出席し、②その何分のいくつ以上の賛成が必要か。また、首長が条例案等に拒否権（再議権）を行使した場合、議会は出席議員の③何分のいくつ以上の賛成で再可決できるか。",
+        slots: [
+          { label: "① 不信任決議の出席要件", acceptable: ["3分の2以上", "3分の2", "2/3", "2/3以上"] },
+          { label: "② 不信任決議の賛成要件", acceptable: ["4分の3以上", "4分の3", "3/4", "3/4以上"] },
+          { label: "③ 拒否権に対する再可決要件", acceptable: ["3分の2以上", "3分の2", "2/3", "2/3以上"] }
+        ],
+        acceptable: ["① 3分の2以上（出席） ／ ② 4分の3以上（賛成） ／ ③ 3分の2以上（再可決）"],
+        hint: "不信任決議は「① 2/3以上の出席」かつ「② 3/4以上の賛成」、再議（拒否権）の再可決は「③ 2/3以上」です。",
+        explanation: "首長への不信任決議は「2/3以上の出席かつ3/4以上の賛成」が必要で、再議（拒否権）に対する議会の再可決は「2/3以上の賛成」が必要です。"
+      },
+      {
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.5｜市と政令指定都市の人口要件【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】基礎自治体である市町村について、①「市」となるための人口要件は何万人以上か。また、②都道府県に準ずる権限を持ち行政区を設置できる「政令指定都市」の人口要件は何万人以上か。",
+        slots: [
+          { label: "① 市の人口要件", acceptable: ["5万人以上", "5万人", "5万"] },
+          { label: "② 政令指定都市の人口要件", acceptable: ["50万人以上", "50万人", "50万"] }
+        ],
+        acceptable: ["① 5万人以上 ／ ② 50万人以上"],
+        hint: "市は「〇万人以上」、政令指定都市はその10倍の「〇〇万人以上」です。",
+        explanation: "市の要件は原則「人口5万人以上」、政令指定都市の要件は「人口50万人以上」です。"
+      },
+      {
+        era: "local_principle",
+        qType: "multi",
+        ordered: true,
+        eraName: "③地方自治・請求権",
+        subtag: "プリント② P.6｜副知事・監査委員等の解職請求【3項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答】副知事・副市町村長・監査委員などの主要公務員の解職請求について、①必要な有権者の署名割合、②請求先、③請求後にどこにかけられて失職が決定するか、を3つすべて答えよ。",
+        slots: [
+          { label: "① 必要署名数", acceptable: ["3分の1以上", "3分の1", "1/3", "1/3以上"] },
+          { label: "② 請求先", acceptable: ["首長", "長", "知事・市町村長"] },
+          { label: "③ 失職を決定する機関", acceptable: ["議会", "地方議会"] }
+        ],
+        acceptable: ["① 3分の1以上 ／ ② 首長 ／ ③ 議会（2/3以上の出席・3/4以上の同意）"],
+        hint: "首長・議員の解職請求（選管宛て→住民投票）と異なり、副知事等は「① 3分の1以上」の署名を「② 首長」に提出し、「③ 議会」で決定します。",
+        explanation: "副知事・副市町村長・監査委員の解職請求は、有権者の「3分の1以上」の連署で「首長」に請求し、首長が「議会」にかけて2/3以上の出席・3/4以上の同意で失職となります。"
+      },
+      {
+        era: "local_finance",
+        qType: "multi",
+        ordered: false,
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.7｜国庫支出金の3種類【3項目完答】",
+        difficulty: "★★★☆☆",
+        question: "【完答（順不同）】プリントP.7に記載されている「国庫支出金」の3つの内訳（①科学技術や貿易振興など国が必要と認めた事業費の一定割合、②国の事務を委託する場合の経費全額、③義務教育や生活保護の経費の一定割合）の名称を3つすべて答えよ。",
+        slots: [
+          { label: "内訳1", acceptable: ["国庫補助金", "補助金"] },
+          { label: "内訳2", acceptable: ["委託金", "国庫委託金"] },
+          { label: "内訳3", acceptable: ["国庫負担金", "負担金"] }
+        ],
+        acceptable: ["国庫補助金・委託金・国庫負担金（順不同・3つ完答）"],
+        hint: "「国庫〇〇金」「〇〇金」「国庫〇〇金」の3種類です。",
+        explanation: "国庫支出金には、①国庫補助金、②委託金、③国庫負担金の3種類があり、いずれも国によって使途が特定されています。"
+      },
+      {
+        era: "local_finance",
+        qType: "multi",
+        ordered: true,
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.7〜8｜地方債の激変緩和と財政破綻自治体【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】①地方債の発行は、かつての国の許可制から2006年に国との何制へと緩和されたか。また、②三位一体の改革による収入減などの影響で2006年に財政破綻し「財政再生団体」に指定された北海道の市はどこか。",
+        slots: [
+          { label: "① 2006年からの地方債発行手続き", acceptable: ["事前協議制", "協議制"] },
+          { label: "② 2006年に財政破綻した北海道の市", acceptable: ["夕張市", "夕張"] }
+        ],
+        acceptable: ["① 事前協議制 ／ ② 夕張市"],
+        hint: "①「〇〇協議制」、②北海道の炭鉱都市だった「〇〇市」です。",
+        explanation: "地方債の発行は2006年から国との「事前協議制」となり国の関与が縮小されました。また同2006年には北海道「夕張市」が財政破綻し財政再生団体に指定されました。"
+      },
+      {
+        era: "local_finance",
+        qType: "multi",
+        ordered: true,
+        eraName: "④地方財政・分権",
+        subtag: "プリント③ P.8｜独自課税の具体例【2項目完答】",
+        difficulty: "★★☆☆☆",
+        question: "【完答】プリントP.8の「地方公共団体の独自課税」の具体例として紹介されている、①東京都が2002年からホテル・旅館の宿泊者に課している税と、②広島県廿日市市が令和5年（2023年）10月から船舶で訪れる町外の者に1回100円課している税の名称をそれぞれ答えよ。",
+        slots: [
+          { label: "① 東京都の独自課税", acceptable: ["宿泊税"] },
+          { label: "② 広島県廿日市市の独自課税", acceptable: ["宮島訪問税"] }
+        ],
+        acceptable: ["① 宿泊税 ／ ② 宮島訪問税"],
+        hint: "①「〇〇税」、②世界遺産の島の名を冠した「〇〇訪問税」です。",
+        explanation: "独自課税（法定外目的税）の代表例として、プリントP.8では東京都の「宿泊税」と広島県廿日市市の「宮島訪問税」が紹介されています。"
+      }
+    ];
+
+    /* =========================================================================
+       クイズ状態管理
+       ========================================================================= */
+    let currentFilter = "all";
+    let currentTypeFilter = "all";
+    let activeQuestionPool = [];
+    let currentIndex = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let answeredCurrent = false;
+    let isReviewMode = false;
+    let wrongQuestions = [];
+    let isSoundEnabled = true;
+    let isEndlessMode = true;
+    let proceduralCursor = 0;
+    let isGeneratingAI = false;
+    let lastUserSubmissionText = "";
+
+    const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+
+    function playTone(type) {
+      if (!isSoundEnabled || !audioCtx) return;
+      try {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        if (type === 'correct') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.1);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'wrong') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.setValueAtTime(196, now + 0.12);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        }
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      document.getElementById('sound-icon').textContent = isSoundEnabled ? '🔊' : '🔇';
+      document.getElementById('sound-label').textContent = isSoundEnabled ? '音声ON' : '音声OFF';
+    }
+
+    function toggleEndlessMode() {
+      isEndlessMode = !isEndlessMode;
+      const btn = document.getElementById('btn-endless-toggle');
+      const label = document.getElementById('endless-label');
+      if (isEndlessMode) {
+        label.textContent = "自動追加: ON";
+        btn.className = "px-2.5 py-1 rounded-md border border-cyan-500/40 bg-cyan-950/40 text-cyan-300 hover:bg-cyan-900/50 transition text-[11px] flex items-center gap-1.5 font-medium";
+      } else {
+        label.textContent = "自動追加: OFF";
+        btn.className = "px-2.5 py-1 rounded-md border border-slate-700 bg-slate-900 text-slate-400 hover:bg-slate-800 transition text-[11px] flex items-center gap-1.5 font-medium";
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('gen-toast');
+      const text = document.getElementById('gen-toast-text');
+      text.textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 4500);
+    }
+
+    /* =========================================================================
+       文字列正規化 ＆ 完答（multi / descriptive / term）採点エンジン
+       ========================================================================= */
+    function katakanaToHiragana(str) {
+      return str.replace(/[\u30a1-\u30f6]/g, match => {
+        const chr = match.charCodeAt(0) - 0x60;
+        return String.fromCharCode(chr);
+      });
+    }
+
+    function normalizeText(text) {
+      if (!text) return "";
+      let t = text.trim();
+      t = t.replace(/[Ａ-Ｚａ-ｚ０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+      t = t.toLowerCase();
+      t = t.replace(/五十/g, "50")
+           .replace(/三分の一/g, "3分の1")
+           .replace(/三分の二/g, "3分の2")
+           .replace(/四分の三/g, "4分の3")
+           .replace(/二分の一/g, "2分の1")
+           .replace(/三割/g, "3割")
+           .replace(/二元/g, "2元")
+           .replace(/三位/g, "3位")
+           .replace(/こども/g, "子ども")
+           .replace(/子供/g, "子ども");
+      t = t.replace(/[\s\u3000\-_・,，.。、/／（）\(\)「」『』【】・〜~：:]/g, "");
+      t = katakanaToHiragana(t);
+      return t;
+    }
+
+    function isSlotMatch(userRaw, acceptableList) {
+      const normU = normalizeText(userRaw);
+      if (!normU) return false;
+      for (const acc of acceptableList) {
+        const normA = normalizeText(acc);
+        if (normU === normA) return true;
+        // 「以上」「制度」「法」などの軽微な接尾辞ゆれを許容しつつ誤爆を防ぐ
+        if (normA.length >= 3 && normU.length >= 2) {
+          if (normU.includes(normA) || normA.includes(normU)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // 複数完答問題（qType === 'multi'）の厳格な完答判定
+    function evaluateMultiAnswer(userSlotValues, q) {
+      const slots = q.slots || [];
+      const totalSlots = slots.length;
+
+      // もし1つ目の入力欄に「、」やスペース区切りで複数まとめて入力し、他が空欄だった場合は自動分割を試みる
+      let values = [...userSlotValues];
+      const nonEmptyCount = values.filter(v => v.trim() !== "").length;
+      if (nonEmptyCount === 1 && totalSlots > 1) {
+        const parts = values[0].split(/[、,，／/・\s\u3000]+/).map(s => s.trim()).filter(Boolean);
+        if (parts.length === totalSlots) {
+          values = parts;
+        }
+      }
+
+      const breakdown = [];
+      let matchedCount = 0;
+
+      if (q.ordered !== false) {
+        // 順序指定あり（①・②・③のそれぞれの欄を個別に判定）
+        for (let i = 0; i < totalSlots; i++) {
+          const uVal = values[i] || "";
+          const ok = isSlotMatch(uVal, slots[i].acceptable);
+          if (ok) matchedCount++;
+          breakdown.push({
+            label: slots[i].label,
+            userVal: uVal || "（未入力）",
+            expected: slots[i].acceptable[0],
+            ok
+          });
+        }
+      } else {
+        // 順不同（重複使用なしで全スロットと照合）
+        const usedSlotIndices = new Set();
+        for (let i = 0; i < totalSlots; i++) {
+          const uVal = values[i] || "";
+          let matchedIdx = -1;
+          for (let sIdx = 0; sIdx < totalSlots; sIdx++) {
+            if (!usedSlotIndices.has(sIdx) && isSlotMatch(uVal, slots[sIdx].acceptable)) {
+              matchedIdx = sIdx;
+              break;
+            }
+          }
+          if (matchedIdx !== -1) {
+            usedSlotIndices.add(matchedIdx);
+            matchedCount++;
+            breakdown.push({
+              label: `解答欄${i + 1}`,
+              userVal: uVal,
+              expected: slots[matchedIdx].acceptable[0],
+              ok: true
+            });
+          } else {
+            breakdown.push({
+              label: `解答欄${i + 1}`,
+              userVal: uVal || "（未入力）",
+              expected: "（未達成の項目あり）",
+              ok: false
+            });
+          }
+        }
+      }
+
+      const isCompleteCorrect = (matchedCount === totalSlots && totalSlots > 0);
+      return {
+        isCorrect: isCompleteCorrect,
+        matchType: isCompleteCorrect ? 'exact' : (matchedCount > 0 ? 'partial' : 'wrong'),
+        matchedCount,
+        totalSlots,
+        breakdown
+      };
+    }
+
+    // 単一用語（term）および記述問題（descriptive）の完答ニュアンス判定
+    function evaluateSingleOrDescriptive(rawUserAns, q) {
+      const normUser = normalizeText(rawUserAns);
+      if (!normUser) return { isCorrect: false, matchType: 'wrong', breakdown: [] };
+
+      // 完全一致チェック
+      for (const acc of (q.acceptable || [])) {
+        const normAcc = normalizeText(acc);
+        if (normUser === normAcc) {
+          return { isCorrect: true, matchType: 'exact', breakdown: [] };
+        }
+        if (q.qType === 'term' && normAcc.length >= 3 && (normUser.includes(normAcc) || (normUser.length >= 3 && normAcc.includes(normUser)))) {
+          return { isCorrect: true, matchType: 'exact', breakdown: [] };
+        }
+      }
+
+      // 概念グループ（nuanceGroups）による必須要素すべて（AND）完答判定
+      if (q.nuanceGroups && q.nuanceGroups.length > 0) {
+        const breakdown = [];
+        let matchedCount = 0;
+
+        for (const group of q.nuanceGroups) {
+          const kwList = Array.isArray(group) ? group : (group.keywords || []);
+          const label = group.label || `必須要素（${kwList.slice(0, 2).join("・")}）`;
+          const hitKw = kwList.find(kw => normUser.includes(normalizeText(kw)));
+          const ok = Boolean(hitKw);
+          if (ok) matchedCount++;
+          breakdown.push({
+            label,
+            userVal: ok ? `「${hitKw}」を検出` : "要素が不足",
+            expected: label,
+            ok
+          });
+        }
+
+        const totalRequired = q.nuanceGroups.length;
+        // 完答制：すべての必須概念グループを満たした場合のみ正解！
+        const isComplete = (matchedCount === totalRequired);
+        return {
+          isCorrect: isComplete,
+          matchType: isComplete ? (q.qType === 'descriptive' ? 'nuance' : 'exact') : (matchedCount > 0 ? 'partial' : 'wrong'),
+          matchedCount,
+          totalSlots: totalRequired,
+          breakdown
+        };
+      }
+
+      return { isCorrect: false, matchType: 'wrong', breakdown: [] };
+    }
+
+    /* =========================================================================
+       問題自動生成エンジン（ハイブリッド：内蔵スマート問題合成 ＋ Gemini API）
+       ========================================================================= */
+    function synthesizeProceduralQuestions(count, targetEra) {
+      const existingIds = new Set(ALL_QUESTIONS.map(q => q.question));
+      const candidates = PROCEDURAL_BANK.filter(q => {
+        const eraMatch = (targetEra === 'all' || q.era === targetEra);
+        return eraMatch && !existingIds.has(q.question);
+      });
+
+      const results = [];
+      while (results.length < count && candidates.length > 0) {
+        const item = candidates.shift();
+        const newQ = {
+          ...item,
+          id: "gen_proc_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          isGenerated: true
+        };
+        ALL_QUESTIONS.push(newQ);
+        results.push(newQ);
+      }
+
+      // もしPROCEDURAL_BANKもすべて出題済みの場合、既存問題からランダムなペア完答問題を動的合成
+      while (results.length < count) {
+        const pool = ALL_QUESTIONS.filter(q => (targetEra === 'all' || q.era === targetEra) && q.qType === 'multi' && q.slots && q.slots.length >= 2);
+        if (pool.length === 0) break;
+        const base = pool[proceduralCursor % pool.length];
+        proceduralCursor++;
+        const reversedSlots = [...base.slots].reverse().map((s, idx) => ({
+          label: `問${idx + 1}（${s.label.replace(/^[①②③④]\s*/, '')}）`,
+          acceptable: s.acceptable
+        }));
+        const synthQ = {
+          id: "gen_synth_" + Date.now() + "_" + proceduralCursor,
+          era: base.era,
+          qType: "multi",
+          ordered: true,
+          eraName: base.eraName,
+          subtag: base.subtag + "｜逆順確認ドリル",
+          difficulty: base.difficulty,
+          question: `【完答・逆順確認】次の各項目を順番にすべて答えよ。（元問題：${base.question.replace(/^【.*?】/, '')}）`,
+          slots: reversedSlots,
+          acceptable: [reversedSlots.map((s, i) => `${i + 1}. ${s.acceptable[0]}`).join(" ／ ")],
+          hint: base.hint,
+          explanation: base.explanation,
+          isGenerated: true
+        };
+        results.push(synthQ);
+      }
+
+      document.getElementById('total-pool-count').textContent = ALL_QUESTIONS.length;
+      return results;
+    }
+
+    async function fetchGeminiQuestions(count, targetEra) {
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const eraMapPrompt = {
+        all: "全範囲（人権保障・平等原則・外国人・子ども・LGBT・地方自治・直接請求権・地方財政）",
+        equality: "平等原則・尊属殺・婚外子・部落差別・二風谷ダム・アイヌ・女性差別・旧優生保護法・ハンセン病",
+        new_rights: "夫婦別姓訴訟・マクリーン事件・定住外国人の権利・子どもの権利・ヤングケアラー・LGBT理解増進法・性別変更要件訴訟",
+        local_principle: "トクヴィル・ブライス・地方自治の本旨・二元代表制・直接請求権4類型と署名数・住民投票・条例・オンブズマン",
+        local_finance: "地方分権一括法・自治事務と法定受託事務・三割自治・地方交付税と国庫支出金・平成の大合併・三位一体の改革・特区・独自課税・ふるさと納税"
+      };
+
+      const existingSample = ALL_QUESTIONS.slice(-12).map(q => q.question).join("\n");
+      const systemPrompt = `あなたは高校「公共・政治経済」のテスト作問システムです。
+学習プリント（基本的人権の保障と新しい人権、地方自治と住民の福祉）の範囲から、まだ出題されていない新しい角度の問題を${count}問作成してください。
+複数解答の問題（qType: "multi"）は必ずすべてのスロットが揃って完答となる形式で作成し、記述問題（qType: "descriptive"）は必須概念キーワード群（nuanceGroups）を2〜3個設定してください。`;
+
+      const userQuery = `対象単元：${eraMapPrompt[targetEra] || eraMapPrompt.all}
+以下の既存問題と重複しない新しい問題を${count}問生成してください：
+${existingSample}`;
+
+      const payload = {
+        contents: [{ parts: [{ text: userQuery }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                era: { type: "STRING" },
+                qType: { type: "STRING" },
+                eraName: { type: "STRING" },
+                subtag: { type: "STRING" },
+                difficulty: { type: "STRING" },
+                question: { type: "STRING" },
+                slots: {
+                  type: "ARRAY",
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      label: { type: "STRING" },
+                      acceptable: { type: "ARRAY", items: { type: "STRING" } }
+                    },
+                    propertyOrdering: ["label", "acceptable"]
+                  }
+                },
+                acceptable: { type: "ARRAY", items: { type: "STRING" } },
+                nuanceGroups: {
+                  type: "ARRAY",
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      label: { type: "STRING" },
+                      keywords: { type: "ARRAY", items: { type: "STRING" } }
+                    },
+                    propertyOrdering: ["label", "keywords"]
+                  }
+                },
+                hint: { type: "STRING" },
+                explanation: { type: "STRING" }
+              },
+              propertyOrdering: ["era", "qType", "eraName", "subtag", "difficulty", "question", "slots", "acceptable", "nuanceGroups", "hint", "explanation"]
+            }
+          }
+        }
+      };
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) throw new Error("API status error");
+      const result = await response.json();
+      const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error("Empty response");
+      const parsed = JSON.parse(text);
+      return parsed.map((item, idx) => ({
+        ...item,
+        id: "gen_ai_" + Date.now() + "_" + idx,
+        ordered: true,
+        nuanceMode: "all",
+        isGenerated: true
+      }));
+    }
+
+    async function generateMoreQuestions(count = 5, resumeImmediately = false) {
+      if (isGeneratingAI) return;
+      isGeneratingAI = true;
+
+      const genBtn = document.getElementById('btn-generate-now');
+      const origHtml = genBtn.innerHTML;
+      genBtn.innerHTML = `<span>⏳</span><span>生成中...</span>`;
+
+      // まず待ち時間ゼロで内蔵スマート問題合成エンジンから即座に問題を追加
+      const immediateQuestions = synthesizeProceduralQuestions(count, currentFilter);
+      activeQuestionPool.push(...immediateQuestions);
+
+      if (resumeImmediately) {
+        document.getElementById('result-summary-card').classList.add('hidden');
+        document.getElementById('quiz-card').classList.remove('hidden');
+        loadCurrentQuestion();
+      } else {
+        // 現在の問題表示の分母を更新
+        document.getElementById('question-index-label').textContent = `Question ${currentIndex + 1} / ${activeQuestionPool.length}`;
+      }
+
+      showToast(`✨ 新しい完答・記述問題を ${immediateQuestions.length} 問自動生成して追加しました！`);
+
+      // バックグラウンドでGemini APIからも新規作問してストックを補充
+      try {
+        const aiQuestions = await fetchGeminiQuestions(3, currentFilter);
+        if (aiQuestions && aiQuestions.length > 0) {
+          PROCEDURAL_BANK.push(...aiQuestions);
+        }
+      } catch (e) {
+        // 内蔵エンジンが既に動作しているためエラー表示不要
+      } finally {
+        genBtn.innerHTML = origHtml;
+        isGeneratingAI = false;
+      }
+    }
+
+    // 記述・言い換え表現のAIニュアンス再判定機能
+    async function regradeWithGemini() {
+      const q = activeQuestionPool[currentIndex];
+      const btn = document.getElementById('btn-ai-regrade');
+      if (!btn || !lastUserSubmissionText) return;
+
+      const origText = btn.textContent;
+      btn.textContent = "🤖 AI判定中...";
+      btn.disabled = true;
+
+      try {
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const prompt = `高校「公共・政治経済」の完答・ニュアンス採点を行ってください。
+問題：${q.question}
+模範解答：${(q.acceptable || []).join(" / ")}
+解説：${q.explanation}
+生徒の解答：${lastUserSubmissionText}
+
+すべての必須要素が似たニュアンス・言い換え表現で含まれており完答といえる場合は isCorrect: true、要素が欠けている・誤っている場合は isCorrect: false とし、短い講評 reason を返してください。`;
+
+        const payload = {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                isCorrect: { type: "BOOLEAN" },
+                reason: { type: "STRING" }
+              },
+              propertyOrdering: ["isCorrect", "reason"]
+            }
+          }
+        };
+
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+
+        const detailBox = document.getElementById('nuance-match-detail');
+        const listEl = document.getElementById('nuance-match-list');
+        detailBox.classList.remove('hidden');
+        listEl.innerHTML = `<div class="text-sky-300">🤖 AI採点講評：${parsed.reason}</div>`;
+
+        if (parsed.isCorrect) {
+          overrideAsCorrect();
+        } else {
+          btn.textContent = "🤖 AI判定：要素不足（未完答）";
+        }
+      } catch (e) {
+        btn.textContent = origText;
+        btn.disabled = false;
+      }
+    }
+
+    /* =========================================================================
+       フィルターと問題読み込み
+       ========================================================================= */
+    function setEraFilter(eraKey) {
+      currentFilter = eraKey;
+      isReviewMode = false;
+      document.getElementById('review-banner').classList.add('hidden');
+
+      document.querySelectorAll('.era-tab').forEach(tab => {
+        if (tab.getAttribute('data-era') === eraKey) {
+          tab.className = "era-tab px-2.5 py-2 text-xs font-semibold rounded-lg transition text-center bg-cyan-500 text-slate-950 shadow-sm";
+        } else {
+          tab.className = "era-tab px-2.5 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 rounded-lg transition text-center hover:bg-slate-900";
+        }
+      });
+
+      rebuildQuestionPool();
+    }
+
+    function setTypeFilter(typeKey) {
+      currentTypeFilter = typeKey;
+      isReviewMode = false;
+      document.getElementById('review-banner').classList.add('hidden');
+
+      document.querySelectorAll('.qtype-tab').forEach(tab => {
+        if (tab.getAttribute('data-qtype') === typeKey) {
+          tab.className = "qtype-tab px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-800 text-cyan-300 border border-cyan-500/40 transition";
+        } else {
+          tab.className = "qtype-tab px-2.5 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-slate-200 border border-transparent transition";
+        }
+      });
+
+      rebuildQuestionPool();
+    }
+
+    function rebuildQuestionPool() {
+      let pool = [...ALL_QUESTIONS];
+      if (currentFilter !== 'all') {
+        pool = pool.filter(q => q.era === currentFilter);
+      }
+      if (currentTypeFilter !== 'all') {
+        pool = pool.filter(q => q.qType === currentTypeFilter);
+      }
+
+      // もし該当フィルタの問題が少なければ自動合成して補充
+      if (pool.length === 0) {
+        const added = synthesizeProceduralQuestions(5, currentFilter);
+        pool = added;
+      }
+
+      activeQuestionPool = pool;
+      shuffleArray(activeQuestionPool);
+
+      currentIndex = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      wrongQuestions = [];
+
+      document.getElementById('result-summary-card').classList.add('hidden');
+      document.getElementById('quiz-card').classList.remove('hidden');
+
+      updateCategoryPillText();
+      loadCurrentQuestion();
+    }
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function updateCategoryPillText() {
+      const pill = document.getElementById('current-category-pill');
+      const map = {
+        all: "全範囲（人権保障・地方自治）",
+        equality: "①平等原則・差別解消判例",
+        new_rights: "②外国人・子ども・LGBT",
+        local_principle: "③地方自治の原則・直接請求権",
+        local_finance: "④地方分権・地方財政・特区"
+      };
+      pill.textContent = isReviewMode ? "間違えた問題の復習" : (map[currentFilter] || "公共・政経");
+    }
+
+    function loadCurrentQuestion() {
+      if (activeQuestionPool.length === 0) return;
+
+      answeredCurrent = false;
+      const q = activeQuestionPool[currentIndex];
+
+      document.getElementById('question-index-label').textContent = `Question ${currentIndex + 1} / ${activeQuestionPool.length}`;
+      document.getElementById('stat-correct-count').textContent = correctCount;
+      document.getElementById('stat-wrong-count').textContent = wrongCount;
+
+      const genBadge = document.getElementById('generated-badge');
+      if (q.isGenerated) {
+        genBadge.classList.remove('hidden');
+      } else {
+        genBadge.classList.add('hidden');
+      }
+
+      const progressPercent = ((currentIndex) / activeQuestionPool.length) * 100;
+      document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
+
+      const typeBadge = document.getElementById('question-type-badge');
+      const inputLabel = document.getElementById('answer-input-label');
+      const singleWrapper = document.getElementById('single-input-Wrapper');
+      const multiWrapper = document.getElementById('multi-input-wrapper');
+      const multiContainer = document.getElementById('multi-slots-container');
+      const input = document.getElementById('answer-input');
+
+      if (q.qType === 'multi' && q.slots && q.slots.length > 0) {
+        typeBadge.textContent = `複数完答（${q.slots.length}項目すべて必須）`;
+        typeBadge.className = "px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-950 text-amber-300 border border-amber-700/70";
+        inputLabel.textContent = `以下の ${q.slots.length} つの解答欄をすべて埋めてください（全項目正解で完答となります）`;
+
+        singleWrapper.classList.add('hidden');
+        multiWrapper.classList.remove('hidden');
+
+        document.getElementById('multi-order-note').textContent = q.ordered === false
+          ? "※順不同です。すべての項目を正しく入力すると完答正解になります"
+          : "※①・②…の順番通りにすべての欄を正しく入力すると完答正解になります";
+
+        multiContainer.innerHTML = "";
+        q.slots.forEach((slot, idx) => {
+          const div = document.createElement('div');
+          div.className = "bg-slate-900/90 border border-slate-700/90 rounded-xl p-2.5 focus-within:ring-2 focus-within:ring-cyan-500 transition";
+          div.innerHTML = `
+            <label class="block text-[11px] font-semibold text-cyan-400 mb-1">${slot.label}</label>
+            <input
+              type="text"
+              data-slot-index="${idx}"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              placeholder="${slot.label}を入力..."
+              class="multi-slot-input w-full bg-transparent text-slate-100 placeholder-slate-500 focus:outline-none text-sm"
+            >
+          `;
+          multiContainer.appendChild(div);
+        });
+
+        const multiSubmitBtn = document.getElementById('btn-submit-multi');
+        multiSubmitBtn.disabled = false;
+        multiSubmitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        const multiGiveupBtn = document.getElementById('btn-giveup-multi');
+        if (multiGiveupBtn) {
+          multiGiveupBtn.disabled = false;
+          multiGiveupBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        setTimeout(() => {
+          const firstSlot = multiContainer.querySelector('.multi-slot-input');
+          if (firstSlot) firstSlot.focus();
+        }, 50);
+
+      } else {
+        singleWrapper.classList.remove('hidden');
+        multiWrapper.classList.add('hidden');
+
+        if (q.qType === 'descriptive') {
+          const reqCount = (q.nuanceGroups || []).length;
+          typeBadge.textContent = `記述・完答ニュアンス採点（必須要素${reqCount}点）`;
+          typeBadge.className = "px-2 py-0.5 rounded text-[11px] font-semibold bg-sky-950 text-sky-300 border border-sky-700/70";
+          inputLabel.textContent = `記述解答を入力してください（必須要素${reqCount}点がすべて似たニュアンスで含まれていれば完答正解）`;
+          input.placeholder = "要点を含めて自分の言葉で入力してください（Enterで採点）";
+        } else {
+          typeBadge.textContent = "一問一答（単一用語）";
+          typeBadge.className = "px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800/60";
+          inputLabel.textContent = "用語を入力してください（漢字・ひらがな・略称など柔軟に判定します）";
+          input.placeholder = "ここに用語を入力（Enterで採点）";
+        }
+
+        input.value = "";
+        input.disabled = false;
+        const singleSubmitBtn = document.getElementById('btn-submit-single');
+        singleSubmitBtn.disabled = false;
+        singleSubmitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        const singleGiveupBtn = document.getElementById('btn-giveup-single');
+        if (singleGiveupBtn) {
+          singleGiveupBtn.disabled = false;
+          singleGiveupBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        setTimeout(() => {
+          input.focus();
+        }, 50);
+      }
+
+      document.getElementById('era-subtag').textContent = `${q.eraName} 【${q.subtag}】`;
+      document.getElementById('difficulty-stars').textContent = q.difficulty;
+      document.getElementById('question-text').textContent = q.question;
+
+      const hintBox = document.getElementById('hint-box');
+      hintBox.classList.add('hidden');
+      hintBox.textContent = q.hint;
+      document.getElementById('hint-button-text').textContent = "ヒント・着眼点を表示する";
+
+      document.getElementById('feedback-panel').classList.add('hidden');
+    }
+
+    function toggleHint() {
+      const hintBox = document.getElementById('hint-box');
+      const isHidden = hintBox.classList.contains('hidden');
+      if (isHidden) {
+        hintBox.classList.remove('hidden');
+        document.getElementById('hint-button-text').textContent = "ヒントを隠す";
+      } else {
+        hintBox.classList.add('hidden');
+        document.getElementById('hint-button-text').textContent = "ヒント・着眼点を表示する";
+      }
+    }
+
+    /* =========================================================================
+       回答判定（完答制）＆「わからない」ギブアップ処理 ＆ 比較アドバイス生成
+       ========================================================================= */
+    function disableAllQuizInputs() {
+      const input = document.getElementById('answer-input');
+      if (input) input.disabled = true;
+
+      const slotInputs = Array.from(document.querySelectorAll('.multi-slot-input'));
+      slotInputs.forEach(el => el.disabled = true);
+
+      ['btn-submit-single', 'btn-giveup-single', 'btn-submit-multi', 'btn-giveup-multi'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.disabled = true;
+          btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+      });
+    }
+
+    // 「🏳️ わからない」ボタン押下時：即座に不正解として処理し、比較解説＆暗記アドバイスを表示
+    function submitGiveUp() {
+      if (answeredCurrent) return;
+      const q = activeQuestionPool[currentIndex];
+      disableAllQuizInputs();
+
+      let evalResult;
+      if (q.qType === 'multi' && q.slots && q.slots.length > 0) {
+        const slotInputs = Array.from(document.querySelectorAll('.multi-slot-input'));
+        const values = slotInputs.map(el => el.value.trim());
+        const partialEval = evaluateMultiAnswer(values, q);
+        evalResult = {
+          ...partialEval,
+          isCorrect: false,
+          matchType: 'giveup',
+          isGiveUp: true
+        };
+      } else if (q.qType === 'descriptive') {
+        const rawVal = (document.getElementById('answer-input')?.value || "").trim();
+        const partialEval = rawVal ? evaluateSingleOrDescriptive(rawVal, q) : {
+          breakdown: (q.nuanceGroups || []).map(g => ({
+            label: g.label || "必須要素",
+            userVal: "（未入力・わからない）",
+            expected: g.label || "必須要素",
+            ok: false
+          })),
+          matchedCount: 0,
+          totalSlots: (q.nuanceGroups || []).length
+        };
+        evalResult = {
+          ...partialEval,
+          isCorrect: false,
+          matchType: 'giveup',
+          isGiveUp: true
+        };
+      } else {
+        evalResult = {
+          isCorrect: false,
+          matchType: 'giveup',
+          isGiveUp: true,
+          breakdown: []
+        };
+      }
+
+      answeredCurrent = true;
+      lastUserSubmissionText = "🏳️ わからない（ギブアップ）";
+
+      wrongCount++;
+      playTone('wrong');
+      if (!wrongQuestions.some(item => item.id === q.id)) {
+        wrongQuestions.push(q);
+      }
+
+      document.getElementById('stat-correct-count').textContent = correctCount;
+      document.getElementById('stat-wrong-count').textContent = wrongCount;
+
+      showFeedback(evalResult, lastUserSubmissionText, q);
+    }
+
+    function submitAnswer(event) {
+      if (event) event.preventDefault();
+      if (answeredCurrent) return;
+
+      const q = activeQuestionPool[currentIndex];
+      let evalResult;
+      let displayUserText = "";
+
+      if (q.qType === 'multi' && q.slots && q.slots.length > 0) {
+        const slotInputs = Array.from(document.querySelectorAll('.multi-slot-input'));
+        const values = slotInputs.map(el => el.value.trim());
+        if (values.every(v => v === "")) {
+          if (slotInputs[0]) slotInputs[0].focus();
+          return;
+        }
+        disableAllQuizInputs();
+
+        evalResult = evaluateMultiAnswer(values, q);
+        displayUserText = values.map((v, i) => `[${i + 1}] ${v || "未入力"}`).join(" ／ ");
+      } else {
+        const input = document.getElementById('answer-input');
+        const rawUserAns = input.value.trim();
+        if (!rawUserAns) {
+          input.focus();
+          return;
+        }
+        disableAllQuizInputs();
+
+        evalResult = evaluateSingleOrDescriptive(rawUserAns, q);
+        displayUserText = rawUserAns;
+      }
+
+      answeredCurrent = true;
+      lastUserSubmissionText = displayUserText;
+
+      if (evalResult.isCorrect) {
+        correctCount++;
+        playTone('correct');
+      } else {
+        wrongCount++;
+        playTone('wrong');
+        if (!wrongQuestions.some(item => item.id === q.id)) {
+          wrongQuestions.push(q);
+        }
+      }
+
+      document.getElementById('stat-correct-count').textContent = correctCount;
+      document.getElementById('stat-wrong-count').textContent = wrongCount;
+
+      showFeedback(evalResult, displayUserText, q);
+    }
+
+    // ユーザーの回答と模範解答との違い・混同ペア・順番入れ替わり・記述不足要素を分析しアドバイスを生成
+    function generateDiffAndAdvice(evalResult, userText, q) {
+      const canonicalMain = (q.acceptable && q.acceptable[0]) ? q.acceptable[0] : "";
+      let diffHtml = "";
+      let adviceHtml = "";
+
+      // 対概念・混同ペアの検知ヘルパー
+      const findConfusionHit = (userStr, targetStr) => {
+        const normU = normalizeText(userStr);
+        const normT = normalizeText(targetStr);
+        if (!normU) return null;
+        for (const pair of CONFUSION_PAIRS) {
+          const normA = normalizeText(pair.a);
+          const normB = normalizeText(pair.b);
+          if ((normT.includes(normA) && normU.includes(normB)) || (normT.includes(normB) && normU.includes(normA))) {
+            return pair;
+          }
+        }
+        return null;
+      };
+
+      // 1. 「🏳️ わからない」が押された場合
+      if (evalResult.isGiveUp) {
+        diffHtml = `
+          <div class="flex flex-col gap-1">
+            <div><span class="text-rose-400 font-bold">● あなたの回答：</span><span class="text-slate-300">「🏳️ わからない」を選択（不正解・要復習リストに追加済み）</span></div>
+            <div><span class="text-cyan-400 font-bold">● 模範解答：</span><span class="text-cyan-200 font-semibold">${canonicalMain}</span></div>
+          </div>
+        `;
+        if (q.qType === 'multi' && q.slots) {
+          const slotNames = q.slots.map(s => `「${s.acceptable[0]}」`).join("・");
+          adviceHtml = `<span>💡</span><div><strong>暗記アドバイス：</strong>この問題は ${slotNames} の<strong>${q.slots.length}つが揃って完答</strong>になります。まずはヒントにある頭文字や年号・セット関係（${q.hint}）を手がかりに、声に出してペアで覚えましょう！</div>`;
+        } else if (q.qType === 'descriptive') {
+          const keys = (q.nuanceGroups || []).map(g => `「${g.label}」`).join(" ＋ ");
+          adviceHtml = `<span>💡</span><div><strong>記述の構成アドバイス：</strong>白紙を防ぐには、文章を丸暗記するのではなく、採点基準となる必須パーツ（<strong>${keys}</strong>）をキーワードとして繋ぎ合わせる意識を持つと一気に書きやすくなります！</div>`;
+        } else {
+          const pairInfo = CONFUSION_PAIRS.find(p => canonicalMain.includes(p.a) || canonicalMain.includes(p.b));
+          const extraTip = pairInfo ? ` 特にテストでは「${pairInfo.a}」と「${pairInfo.b}」のひっかけ問題が頻出です（${pairInfo.advice}）。` : "";
+          adviceHtml = `<span>💡</span><div><strong>暗記アドバイス：</strong>まずは核となる用語<strong>『${canonicalMain}』</strong>をプリントの前後関係（${q.subtag}）と結びつけて押さえましょう。${extraTip}</div>`;
+        }
+        return { diffHtml, adviceHtml };
+      }
+
+      // 2. 複数完答問題（qType === 'multi'）の比較・アドバイス
+      if (q.qType === 'multi' && q.slots) {
+        const bd = evalResult.breakdown || [];
+        const okItems = bd.filter(b => b.ok);
+        const ngItems = bd.filter(b => !b.ok);
+
+        if (evalResult.isCorrect) {
+          diffHtml = `<div class="text-emerald-300 font-medium">✓ 全 ${q.slots.length} 項目のすべてが模範解答（${canonicalMain}）と完全に一致しています！</div>`;
+          adviceHtml = `<span>💡</span><div><strong>定着アドバイス：</strong>${q.slots.length}つの項目を順番・対応関係まで正確に整理できています。記述問題でこの知識を使う際も、このセット関係をそのまま活用しましょう。</div>`;
+        } else {
+          // 順番が入れ替わっている（逆に入力した）ケースを検知
+          let swappedDetected = false;
+          if (q.ordered !== false && q.slots.length >= 2) {
+            for (let i = 0; i < bd.length; i++) {
+              if (!bd[i].ok && bd[i].userVal && bd[i].userVal !== "（未入力）") {
+                for (let j = 0; j < q.slots.length; j++) {
+                  if (i !== j && isSlotMatch(bd[i].userVal, q.slots[j].acceptable)) {
+                    swappedDetected = true;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
+          const ngComparisonText = ngItems.map(item =>
+            `<span class="inline-block mr-2 text-rose-300">${item.label}：あなた「<strong>${item.userVal}</strong>」⇔ 正解「<strong class="text-cyan-300">${item.expected}</strong>」</span>`
+          ).join("<br>");
+
+          diffHtml = `
+            <div class="space-y-1">
+              <div><span class="text-amber-300 font-bold">● 完答比較：</span>全 ${q.slots.length} 項目中 <strong>${okItems.length} 項目正解</strong>（完答まであと <strong>${ngItems.length} 項目</strong>）</div>
+              <div class="pl-2 border-l-2 border-rose-500/50 text-[11px] leading-relaxed">${ngComparisonText}</div>
+            </div>
+          `;
+
+          if (swappedDetected) {
+            adviceHtml = `<span>💡</span><div><strong>要注意アドバイス：</strong>用語自体は思い出せていますが、<strong>①・②の順番（対応関係）が逆・入れ替わって入力</strong>されています！どちらがどちらの説明かをプリントの定義で再確認しましょう。</div>`;
+          } else {
+            // 混同ペアチェック
+            let pairTip = "";
+            for (const ng of ngItems) {
+              const hit = findConfusionHit(ng.userVal, ng.expected);
+              if (hit) {
+                pairTip = `（⚠️「${hit.a}」と「${hit.b}」の混同に注意：${hit.advice}）`;
+                break;
+              }
+            }
+            const missingNames = ngItems.map(n => `『${n.expected}』`).join("・");
+            adviceHtml = `<span>💡</span><div><strong>完答へのアドバイス：</strong>${okItems.length > 0 ? `正解できた項目はバッチリです！` : ""}抜けていた <strong>${missingNames}</strong> を含めて「${q.slots.length}点セット」で暗記すると、次回確実に完答できます。${pairTip}</div>`;
+          }
+        }
+        return { diffHtml, adviceHtml };
+      }
+
+      // 3. 記述問題（qType === 'descriptive'）の比較・アドバイス
+      if (q.qType === 'descriptive') {
+        const bd = evalResult.breakdown || [];
+        const okPoints = bd.filter(b => b.ok).map(b => b.label);
+        const ngPoints = bd.filter(b => !b.ok).map(b => b.label);
+
+        if (evalResult.isCorrect) {
+          diffHtml = `
+            <div class="space-y-1">
+              <div><span class="text-emerald-400 font-bold">● あなたの記述：</span>「${userText}」</div>
+              <div><span class="text-cyan-400 font-bold">● 模範解答との比較：</span>必須要素（${okPoints.join(" ／ ")}）がすべて含まれており、意味・ニュアンスともに完答基準を満たしています。</div>
+            </div>
+          `;
+          adviceHtml = `<span>💡</span><div><strong>記述ブラッシュアップ：</strong>自分の言葉で要点を捉えられています！定期考査や入試でさらに確実に満点を狙うなら、模範解答の表現<strong>「${canonicalMain}」</strong>の言い回しも参考にしてみてください。</div>`;
+        } else {
+          diffHtml = `
+            <div class="space-y-1">
+              <div><span class="text-rose-400 font-bold">● あなたの記述：</span>「${userText}」</div>
+              <div><span class="text-emerald-300 font-bold">🟢 含まれていた要素：</span>${okPoints.length > 0 ? okPoints.join(" ／ ") : "なし（必須キーワードが検出されませんでした）"}</div>
+              <div><span class="text-rose-300 font-bold">🔴 模範解答と比べて不足していた要素：</span><strong>${ngPoints.join(" ／ ")}</strong></div>
+            </div>
+          `;
+          adviceHtml = `<span>💡</span><div><strong>記述改善アドバイス：</strong>${okPoints.length > 0 ? `「${okPoints.join("・")}」に着目できた点は素晴らしいです！そこに` : "この記述問題では、"}不足していた<strong>『${ngPoints.join("』『")}』</strong>という要素を書き加えると、模範解答（${canonicalMain}）と同じ完答になります。</div>`;
+        }
+        return { diffHtml, adviceHtml };
+      }
+
+      // 4. 単一用語問題（qType === 'term'）の比較・アドバイス
+      if (evalResult.isCorrect) {
+        const isExact = (userText.trim() === canonicalMain);
+        diffHtml = `
+          <div>
+            <span class="text-emerald-400 font-bold">● 回答比較：</span>あなたの回答「<strong>${userText}</strong>」は模範解答「<strong>${canonicalMain}</strong>」と${isExact ? "完全一致しています！" : "同義・表記ゆれの範囲内で正解です！"}
+          </div>
+        `;
+        const pairInfo = CONFUSION_PAIRS.find(p => canonicalMain.includes(p.a) || canonicalMain.includes(p.b));
+        adviceHtml = `<span>💡</span><div><strong>ワンポイント確認：</strong>${pairInfo ? `よく似た対概念の知識整理：${pairInfo.advice}` : `プリント正式表記「${canonicalMain}」を漢字まで正確に書けるようにしておくとテストで万全です。`}</div>`;
+      } else {
+        const confusion = findConfusionHit(userText, canonicalMain);
+        // 共通文字チェック（惜しい誤字・一部一致の検出）
+        const normU = normalizeText(userText);
+        const normA = normalizeText(canonicalMain);
+        let sharedChars = 0;
+        for (const ch of normU) {
+          if (normA.includes(ch)) sharedChars++;
+        }
+
+        diffHtml = `
+          <div class="space-y-1">
+            <div><span class="text-rose-400 font-bold">● あなたの回答：</span>「<strong>${userText}</strong>」 ⇔ <span class="text-cyan-300 font-bold">模範解答：</span>「<strong>${canonicalMain}</strong>」</div>
+          </div>
+        `;
+
+        if (confusion) {
+          adviceHtml = `<span>💡</span><div><strong>混同注意アドバイス：</strong>対になる重要用語<strong>「${confusion.a}」と「${confusion.b}」が逆（混同）</strong>になっています！<br>${confusion.advice}</div>`;
+        } else if (sharedChars >= 2) {
+          adviceHtml = `<span>💡</span><div><strong>惜しい！表記アドバイス：</strong>あなたの回答「${userText}」は模範解答「${canonicalMain}」と共通する部分がありますが、正確な用語名（漢字・語尾）が異なっています。<strong>『${canonicalMain}』</strong>として正確に覚え直しましょう！</div>`;
+        } else {
+          adviceHtml = `<span>💡</span><div><strong>暗記アドバイス：</strong>あなたの回答「${userText}」と模範解答「${canonicalMain}」の対応を確認しましょう。問題文のキーワードと<strong>『${canonicalMain}』</strong>をセットで結びつけるのが正解への近道です。</div>`;
+        }
+      }
+
+      return { diffHtml, adviceHtml };
+    }
+
+    // AIによる個別添削・比較アドバイス生成（ボタン押下時）
+    async function requestAiDetailedAdvice() {
+      const q = activeQuestionPool[currentIndex];
+      const btn = document.getElementById('btn-ai-advice');
+      const tipBox = document.getElementById('advice-tip-content');
+      if (!btn || !q) return;
+
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = `<span>⏳</span><span>AI添削中...</span>`;
+      btn.disabled = true;
+
+      try {
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const prompt = `あなたは高校「公共・政治経済」の優しい個別指導講師です。
+問題：${q.question}
+模範解答：${(q.acceptable || []).join(" / ")}
+プリントの解説：${q.explanation}
+生徒の回答：${lastUserSubmissionText}
+
+1. 生徒の回答と模範解答の具体的な違い（どこが合っていて、どこが足りない・どう違うか、または「わからない」を選んだ場合はどこから覚えるべきか）
+2. テストで間違えないための覚え方のコツや記述の書き方アドバイス
+を、2〜3文でわかりやすく簡潔にアドバイスしてください。`;
+
+        const payload = {
+          contents: [{ parts: [{ text: prompt }] }]
+        };
+
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (aiText) {
+          tipBox.innerHTML = `<span>🤖</span><div><strong>AI講師からの個別添削アドバイス：</strong><br>${aiText.replace(/\n/g, '<br>')}</div>`;
+          btn.innerHTML = `<span>✓</span><span>AI添削完了</span>`;
+        } else {
+          throw new Error("No text");
+        }
+      } catch (e) {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+    }
+
+    function showFeedback(evalResult, userText, q) {
+      const panel = document.getElementById('feedback-panel');
+      const badge = document.getElementById('result-badge');
+      const userAnsElem = document.getElementById('user-answer-text');
+      const canonicalElem = document.getElementById('canonical-answers');
+      const explContent = document.getElementById('explanation-content');
+      const nuanceDetail = document.getElementById('nuance-match-detail');
+      const nuanceList = document.getElementById('nuance-match-list');
+      const selfOverrideBox = document.getElementById('self-override-box');
+      const regradeBtn = document.getElementById('btn-ai-regrade');
+      const aiAdviceBtn = document.getElementById('btn-ai-advice');
+
+      if (regradeBtn) {
+        regradeBtn.textContent = "🤖 AIでニュアンス再判定";
+        regradeBtn.disabled = false;
+      }
+      if (aiAdviceBtn) {
+        aiAdviceBtn.innerHTML = `<span>🤖</span><span>AIでさらに詳しく添削・比較</span>`;
+        aiAdviceBtn.disabled = false;
+      }
+
+      userAnsElem.textContent = userText;
+
+      if (evalResult.isCorrect) {
+        selfOverrideBox.classList.add('hidden');
+        if (evalResult.matchType === 'nuance') {
+          badge.className = "px-3.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1.5 badge-nuance";
+          badge.innerHTML = `<span>◎</span><span>ニュアンス完答正解！ すべての必須要素を押さえています</span>`;
+        } else {
+          badge.className = "px-3.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1.5 badge-correct";
+          badge.innerHTML = `<span>✓</span><span>完答正解！ すべての項目を正確に解答できました</span>`;
+        }
+      } else if (evalResult.isGiveUp) {
+        badge.className = "px-3.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1.5 badge-wrong";
+        badge.innerHTML = `<span>🏳️</span><span>不正解（わからないを選択・復習リストに追加しました）</span>`;
+        selfOverrideBox.classList.add('hidden');
+      } else if (evalResult.matchType === 'partial') {
+        badge.className = "px-3.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1.5 badge-partial";
+        badge.innerHTML = `<span>△</span><span>惜しい！部分一致（${evalResult.matchedCount}/${evalResult.totalSlots}項目正解・完答ならず）</span>`;
+        selfOverrideBox.classList.remove('hidden');
+      } else {
+        badge.className = "px-3.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1.5 badge-wrong";
+        badge.innerHTML = `<span>✕</span><span>不正解（模範解答との違いとアドバイスを確認しましょう）</span>`;
+        selfOverrideBox.classList.remove('hidden');
+      }
+
+      // 回答と模範解答との違い・学習アドバイスの生成と反映
+      const { diffHtml, adviceHtml } = generateDiffAndAdvice(evalResult, userText, q);
+      document.getElementById('diff-comparison-content').innerHTML = diffHtml;
+      document.getElementById('advice-tip-content').innerHTML = adviceHtml;
+
+      // 完答スロット・必須概念の内訳表示
+      if (evalResult.breakdown && evalResult.breakdown.length > 0) {
+        nuanceDetail.classList.remove('hidden');
+        nuanceList.innerHTML = "";
+        evalResult.breakdown.forEach(item => {
+          const row = document.createElement('div');
+          row.className = "flex items-center justify-between gap-2 py-1 border-b border-slate-800/80 last:border-none";
+          const statusBadge = item.ok
+            ? `<span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700/60 font-semibold text-[11px]">✓ OK</span>`
+            : `<span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700/60 font-semibold text-[11px]">✕ 不足/誤り（正: ${item.expected}）</span>`;
+          row.innerHTML = `
+            <span class="text-slate-300 font-medium">${item.label}：<span class="mono text-slate-400">${item.userVal}</span></span>
+            ${statusBadge}
+          `;
+          nuanceList.appendChild(row);
+        });
+      } else {
+        nuanceDetail.classList.add('hidden');
+      }
+
+      canonicalElem.textContent = (q.acceptable || []).join("  ／  ");
+      explContent.textContent = q.explanation;
+
+      // 最終問題かつエンドレス自動生成モードON時のボタンラベル更新
+      const nextLabel = document.getElementById('btn-next-label');
+      if (currentIndex + 1 >= activeQuestionPool.length && isEndlessMode && !isReviewMode) {
+        nextLabel.textContent = "次の問題へ（自動で新問題を生成して継続 ♾️）";
+      } else if (currentIndex + 1 >= activeQuestionPool.length) {
+        nextLabel.textContent = "結果サマリーを見る";
+      } else {
+        nextLabel.textContent = "次の問題に進む";
+      }
+
+      panel.classList.remove('hidden');
+
+      setTimeout(() => {
+        document.getElementById('btn-next').focus();
+      }, 50);
+    }
+
+    function overrideAsCorrect() {
+      const q = activeQuestionPool[currentIndex];
+      if (wrongCount > 0) wrongCount--;
+      correctCount++;
+      wrongQuestions = wrongQuestions.filter(item => item.id !== q.id);
+
+      document.getElementById('stat-correct-count').textContent = correctCount;
+      document.getElementById('stat-wrong-count').textContent = wrongCount;
+
+      const badge = document.getElementById('result-badge');
+      badge.className = "px-3.5 py-1 rounded-full text-xs font-bold text-white shadow-sm flex items-center gap-1.5 badge-nuance";
+      badge.innerHTML = `<span>◎</span><span>完答正解として記録しました！</span>`;
+
+      document.getElementById('self-override-box').classList.add('hidden');
+      playTone('correct');
+    }
+
+    function nextQuestion() {
+      if (currentIndex + 1 < activeQuestionPool.length) {
+        currentIndex++;
+        loadCurrentQuestion();
+      } else if (isEndlessMode && !isReviewMode) {
+        // 問題が尽きたら自動的に5問新規生成してシームレスに継続
+        currentIndex++;
+        generateMoreQuestions(5, true);
+      } else {
+        showFinalSummary();
+      }
+    }
+
+    /* =========================================================================
+       リザルト画面 & 復習機能
+       ========================================================================= */
+    function showFinalSummary() {
+      document.getElementById('quiz-card').classList.add('hidden');
+      const summaryCard = document.getElementById('result-summary-card');
+      summaryCard.classList.remove('hidden');
+
+      const total = activeQuestionPool.length;
+      const acc = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+      document.getElementById('summary-total').textContent = total;
+      document.getElementById('summary-correct').textContent = correctCount;
+      document.getElementById('summary-accuracy').textContent = `${acc}%`;
+
+      const filterNames = {
+        all: "全範囲（人権保障・地方自治 全8ページ）",
+        equality: "①平等原則・差別解消判例（P.1〜2）",
+        new_rights: "②外国人・子ども・LGBTの人権（P.3〜4）",
+        local_principle: "③地方自治の原則・直接請求権（P.5〜6）",
+        local_finance: "④地方分権・地方財政・特区制度（P.7〜8）"
+      };
+      document.getElementById('result-era-title').textContent = isReviewMode 
+        ? "復習モード演習結果" 
+        : `区分：${filterNames[currentFilter] || "カスタム"}`;
+
+      const wrongContainer = document.getElementById('wrong-answers-container');
+      const wrongList = document.getElementById('wrong-items-list');
+      const reviewBtn = document.getElementById('btn-start-review');
+
+      if (wrongQuestions.length > 0) {
+        wrongContainer.classList.remove('hidden');
+        reviewBtn.classList.remove('hidden');
+        document.getElementById('wrong-count-badge').textContent = `${wrongQuestions.length}問`;
+        wrongList.innerHTML = "";
+
+        wrongQuestions.forEach(q => {
+          const li = document.createElement('li');
+          li.className = "p-2.5 rounded-lg bg-slate-950/80 border border-slate-800";
+          li.innerHTML = `
+            <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1 flex-wrap gap-1">
+              <span class="text-cyan-400 font-medium">${q.eraName}【${q.subtag}】</span>
+              <span class="mono font-bold text-amber-300">完答基準：${q.acceptable[0]}</span>
+            </div>
+            <p class="text-slate-300 text-xs mb-1">${q.question}</p>
+            <p class="text-[11px] text-slate-500">${q.explanation}</p>
+          `;
+          wrongList.appendChild(li);
+        });
+      } else {
+        wrongContainer.classList.add('hidden');
+        reviewBtn.classList.add('hidden');
+      }
+    }
+
+    function startReviewMistakes() {
+      if (wrongQuestions.length === 0) return;
+      isReviewMode = true;
+      document.getElementById('review-banner').classList.remove('hidden');
+
+      activeQuestionPool = [...wrongQuestions];
+      shuffleArray(activeQuestionPool);
+
+      currentIndex = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      wrongQuestions = [];
+
+      document.getElementById('result-summary-card').classList.add('hidden');
+      document.getElementById('quiz-card').classList.remove('hidden');
+
+      updateCategoryPillText();
+      loadCurrentQuestion();
+    }
+
+    function exitReviewMode() {
+      setEraFilter(currentFilter);
+    }
+
+    function restartCategoryQuiz() {
+      setEraFilter(currentFilter);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('total-pool-count').textContent = ALL_QUESTIONS.length;
+      setEraFilter('all');
+    });
+  </script>
+</body>
+</html>
